@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "483415311959",
+    "firebase_url": "https://flutterwave-promise.firebaseio.com",
+    "project_id": "flutterwave-promise",
+    "storage_bucket": "flutterwave-promise.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:483415311959:android:90cd106c804ffdd7d58512",
+        "android_client_info": {
+          "package_name": "com.promisebooks.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "483415311959-q32cg6ct0v3scg9l1mn0hnagpafu0luq.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAVeTXGpyTduZG1OnLSCAcZH6C9QjFuslc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "483415311959-q32cg6ct0v3scg9l1mn0hnagpafu0luq.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

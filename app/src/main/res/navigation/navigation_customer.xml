@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/navigation"
+    app:startDestination="@id/myBookFragment">
+
+    <fragment
+        android:id="@+id/myBookFragment"
+        android:name="com.promisebooks.app.customer.MyBookFragment"
+        android:label="my_book_fragment"
+        tools:layout="@layout/my_book_fragment" />
+    <fragment
+        android:id="@+id/paymentFragment"
+        android:name="com.promisebooks.app.customer.PaymentFragment"
+        android:label="payment_fragment"
+        tools:layout="@layout/payment_fragment" />
+    <fragment
+        android:id="@+id/marketFragment"
+        android:name="com.promisebooks.app.customer.MarketFragment"
+        android:label="market_fragment"
+        tools:layout="@layout/market_fragment" >
+        <action
+            android:id="@+id/action_marketFragment_to_paymentFragment"
+            app:destination="@id/paymentFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/deleteFragment"
+        android:name="com.promisebooks.app.customer.DeleteFragment"
+        android:label="delete_fragment"
+        tools:layout="@layout/delete_fragment" />
+</navigation>

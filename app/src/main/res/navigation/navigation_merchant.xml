@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/navigation_merchant"
+    app:startDestination="@id/transactionFragment">
+
+    <fragment
+        android:id="@+id/transactionFragment"
+        android:name="com.promisebooks.app.merchant.TransactionFragment"
+        android:label="transaction_fragment"
+        tools:layout="@layout/transaction_fragment" />
+    <fragment
+        android:id="@+id/refundFragment"
+        android:name="com.promisebooks.app.merchant.RefundFragment"
+        android:label="refund_fragment"
+        tools:layout="@layout/refund_fragment" />
+    <fragment
+        android:id="@+id/uploadFragment"
+        android:name="com.promisebooks.app.merchant.UploadFragment"
+        android:label="upload_fragment"
+        tools:layout="@layout/upload_fragment" />
+</navigation>
