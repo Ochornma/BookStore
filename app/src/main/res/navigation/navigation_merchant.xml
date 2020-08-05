@@ -20,4 +20,5 @@
         android:name="com.promisebooks.app.merchant.UploadFragment"
         android:label="upload_fragment"
         tools:layout="@layout/upload_fragment" />
+    <include app:graph="@navigation/navigation_customer" />
 </navigation>

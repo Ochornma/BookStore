@@ -20,3 +20,6 @@
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
 -dontwarn org.codehaus.mojo.animal_sniffer.*
+-keepattributes Signature
+-keepattributes *Annotation*
+-keep class com.promisebooks.app.model.Book

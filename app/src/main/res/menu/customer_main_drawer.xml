@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/myBookFragment"
+        android:icon="@drawable/ic_book"
+        android:title="My Books" />
+    <item
+        android:id="@+id/marketFragment"
+        android:icon="@drawable/ic_money"
+        android:title="Buy Books" />
+    <item
+        android:id="@+id/deleteFragment"
+        android:icon="@drawable/ic_setting"
+        android:title="Mangae Account" />
+</menu>

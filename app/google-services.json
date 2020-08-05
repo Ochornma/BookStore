@@ -30,6 +30,13 @@
             {
               "client_id": "483415311959-q32cg6ct0v3scg9l1mn0hnagpafu0luq.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "483415311959-r58io34gn26fb8fbgabforhk0p85sufi.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.promisebooks.app"
+              }
             }
           ]
         }
