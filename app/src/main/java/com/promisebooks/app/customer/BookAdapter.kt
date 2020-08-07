@@ -2,6 +2,7 @@ package com.promisebooks.app.customer
 
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.databinding.DataBindingUtil
@@ -13,7 +14,7 @@ import com.promisebooks.app.databinding.MarketItemBinding
 import com.promisebooks.app.model.Book
 import com.squareup.picasso.Picasso
 
-class BookAdapter(option: FirestoreRecyclerOptions<Book>): FirestoreRecyclerAdapter<Book, BookAdapter.BookHolder>(option) {
+class BookAdapter(option: FirestoreRecyclerOptions<Book>, val clicked: Clicked): FirestoreRecyclerAdapter<Book, BookAdapter.BookHolder>(option) {
 
 
 
@@ -25,10 +26,24 @@ class BookAdapter(option: FirestoreRecyclerOptions<Book>): FirestoreRecyclerAdap
     override fun onBindViewHolder(holder: BookHolder, position: Int, model: Book) {
         holder.binding.message = model
         holder.binding.watch.text = "NGN${model.price}"
+        holder.binding.root.setOnClickListener {
+            clicked.click(it, model)
+        }
+        holder.binding.watch.setOnClickListener {
+            clicked.click(it, model)
+        }
+        holder.binding.listen.setOnClickListener {
+            clicked.click(it, model)
+        }
         Picasso.get().load(model.image).placeholder(R.drawable.app_icon).error(R.drawable.app_icon).fit().into(holder.binding.image)
     }
 
     class BookHolder(val binding: MarketItemBinding): RecyclerView.ViewHolder(binding.root) {
 
     }
+
+
+}
+interface Clicked{
+    fun click(view:View, book: Book)
 }

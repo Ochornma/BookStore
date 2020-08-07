@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/navigation"
-    app:startDestination="@id/myBookFragment">
+    app:startDestination="@id/marketFragment">
 
     <fragment
         android:id="@+id/myBookFragment"
@@ -18,6 +18,11 @@
         <argument
             android:name="book"
             app:argType="com.promisebooks.app.model.Book" />
+        <action
+            android:id="@+id/action_paymentFragment_to_myBookFragment"
+            app:destination="@id/myBookFragment"
+            app:popUpTo="@id/myBookFragment"
+            app:popUpToInclusive="true" />
     </fragment>
     <fragment
         android:id="@+id/marketFragment"

@@ -6,7 +6,7 @@ import kotlinx.android.parcel.Parcelize
 
 @Keep
 @Parcelize
-class Book(var title: String, var image: String, var description: String, var price: String) :
+data class Book(var title: String, var image: String, var description: String, var price: String) :
     Parcelable {
     constructor(): this(" "," ", " ", " ")
 }

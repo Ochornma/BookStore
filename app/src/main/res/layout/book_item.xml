@@ -7,7 +7,7 @@
     <data>
         <variable
             name="message"
-            type="com.promisebooks.app.model.Book" />
+            type="com.promisebooks.app.model.BookBought" />
     </data>
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
@@ -63,7 +63,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="10dp"
                         android:maxLines="2"
-
+                        android:text="@{message.title}"
                         android:textColor="#90000000"
                         android:textSize="12sp"
                         app:layout_constraintStart_toStartOf="parent"
@@ -75,7 +75,7 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:maxLines="2"
-                        android:text="@={message.title}"
+                        android:text="@={message.description}"
                         android:textColor="#000"
                         android:textSize="20sp"
                         android:textStyle="bold"

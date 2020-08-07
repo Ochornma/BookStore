@@ -9,11 +9,16 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 import com.promisebooks.app.R
 import com.promisebooks.app.databinding.SignUpFragmentBinding
 
 class SignUpFragment : Fragment() {
     private lateinit var binding: SignUpFragmentBinding
+    private var db = FirebaseFirestore.getInstance()
+    private var collection = db.collection("Users")
+    var name = " "
+    var phone = " "
 
     companion object {
         fun newInstance() = SignUpFragment()
@@ -40,7 +45,9 @@ class SignUpFragment : Fragment() {
         binding.submit.setOnClickListener {
             val email = binding.emailInput.text.toString()
             val password = binding.passwordInput.text.toString()
-            if (email.isNotEmpty() and password.isNotEmpty()){
+         name = binding.nameInput.text.toString()
+            phone = binding.phoneInput.text.toString()
+            if (email.isNotEmpty() and password.isNotEmpty() and name.isNotEmpty() and phone.isNotEmpty()){
                 binding.progressCircular.visibility = View.VISIBLE
                 binding.cardView.visibility = View.GONE
                 signUp(email = email, password = password)
@@ -53,8 +60,18 @@ class SignUpFragment : Fragment() {
     private fun signUp(email: String, password: String){
         FirebaseAuth.getInstance().createUserWithEmailAndPassword(email, password).addOnCompleteListener {
             if (it.isSuccessful){
-                binding.progressCircular.visibility = View.GONE
-                activity?.onBackPressed()
+                val user = hashMapOf(
+                    "name" to name,
+                    "phone" to phone
+                )
+                val uiid = FirebaseAuth.getInstance().currentUser?.uid
+                collection.document(uiid!!).set(user).addOnCompleteListener {it1 ->
+                    if (it1.isSuccessful){
+                        binding.progressCircular.visibility = View.GONE
+                        activity?.onBackPressed()
+                    }
+                }
+
             } else{
                 binding.progressCircular.visibility = View.GONE
                 binding.cardView.visibility = View.VISIBLE

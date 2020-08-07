@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:title="Admin Panel" >
+
+        <menu>
+        <item
+            android:id="@+id/transactionFragment"
+            android:icon="@drawable/ic_transaction"
+            android:title="Transactions">
+
+        </item>
+            <item
+                android:id="@+id/refundFragment"
+                android:icon="@drawable/ic_refund"
+                android:title="Refund" />
+            <item
+                android:id="@+id/uploadFragment"
+                android:icon="@drawable/ic_upload"
+                android:title="Upload" />
+
+
+        </menu>
+    </item>
+
+    <item android:title="Personal" >
+
+        <menu>
+            <item
+                android:id="@+id/marketFragment"
+                android:icon="@drawable/ic_money"
+                android:title="Buy Books" />
+            <item
+                android:id="@+id/myBookFragment"
+                android:icon="@drawable/ic_book"
+                android:title="My Books" />
+
+            <item
+                android:id="@+id/deleteFragment"
+                android:icon="@drawable/ic_setting"
+                android:title="Mangae Account" />
+
+
+        </menu>
+    </item>
+</menu>

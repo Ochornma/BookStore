@@ -8,8 +8,12 @@
     <fragment
         android:id="@+id/transactionFragment"
         android:name="com.promisebooks.app.merchant.TransactionFragment"
-        android:label="transaction_fragment"
-        tools:layout="@layout/transaction_fragment" />
+        android:label=" "
+        tools:layout="@layout/transaction_fragment" >
+        <action
+            android:id="@+id/action_transactionFragment_to_transactionViewFragment"
+            app:destination="@id/transactionViewFragment" />
+    </fragment>
     <fragment
         android:id="@+id/refundFragment"
         android:name="com.promisebooks.app.merchant.RefundFragment"
@@ -20,5 +24,41 @@
         android:name="com.promisebooks.app.merchant.UploadFragment"
         android:label="upload_fragment"
         tools:layout="@layout/upload_fragment" />
-    <include app:graph="@navigation/navigation_customer" />
+    <fragment
+        android:id="@+id/myBookFragment"
+        android:name="com.promisebooks.app.customer.MyBookFragment"
+        android:label="MyBookFragment"
+        tools:layout="@layout/my_book_fragment"/>
+    <fragment
+        android:id="@+id/deleteFragment"
+        android:name="com.promisebooks.app.customer.DeleteFragment"
+        android:label="DeleteFragment"
+        tools:layout="@layout/delete_fragment"/>
+    <fragment
+        android:id="@+id/paymentFragment"
+        android:name="com.promisebooks.app.customer.PaymentFragment"
+        android:label="PaymentFragment"
+        tools:layout="@layout/payment_fragment">
+        <argument
+            android:name="book"
+            app:argType="com.promisebooks.app.model.Book" />
+    </fragment>
+    <fragment
+        android:id="@+id/marketFragment"
+        android:name="com.promisebooks.app.customer.MarketFragment"
+        android:label="MarketFragment"
+        tools:layout="@layout/market_fragment">
+        <action
+            android:id="@+id/action_marketFragment_to_paymentFragment"
+            app:destination="@id/paymentFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/transactionViewFragment"
+        android:name="com.promisebooks.app.merchant.TransactionViewFragment"
+        android:label="transaction_view_fragment"
+        tools:layout="@layout/transaction_view_fragment" >
+        <argument
+            android:name="ref"
+            app:argType="string" />
+    </fragment>
 </navigation>

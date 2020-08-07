@@ -30,7 +30,7 @@ class AuthFragment : Fragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         binding = DataBindingUtil.inflate(inflater, R.layout.auth_fragment, container, false)
-        setUpListener()
+
         return binding.root
     }
 
@@ -50,15 +50,18 @@ class AuthFragment : Fragment() {
     private fun setUpListener(){
         authListner = FirebaseAuth.AuthStateListener {
             if (it.currentUser != null){
+
                 if (merchant(it.currentUser!!.email!!)){
-                    val intent = Intent(activity, MerchantActivity::class.java)
+                    FirebaseAuth.getInstance().removeAuthStateListener(authListner)
+                    val intent = Intent(activity?.applicationContext, MerchantActivity::class.java)
                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
-                    startActivity(intent)
+                    activity?.startActivity(intent)
 
                 } else{
-                    val intent = Intent(activity, CustomerActivity::class.java)
+                    FirebaseAuth.getInstance().removeAuthStateListener(authListner)
+                    val intent = Intent(activity?.applicationContext, CustomerActivity::class.java)
                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
-                    startActivity(intent)
+                    activity?.startActivity(intent)
                 }
                 activity?.finish()
             }
@@ -72,6 +75,7 @@ class AuthFragment : Fragment() {
 
     override fun onStart() {
         super.onStart()
+        setUpListener()
         FirebaseAuth.getInstance().addAuthStateListener(authListner)
     }
 
