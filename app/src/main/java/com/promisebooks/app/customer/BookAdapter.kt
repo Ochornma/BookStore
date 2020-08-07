@@ -1,20 +1,18 @@
 package com.promisebooks.app.customer
 
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.RecyclerView
-import com.firebase.ui.firestore.FirestoreRecyclerAdapter
-import com.firebase.ui.firestore.FirestoreRecyclerOptions
+import com.firebase.ui.firestore.paging.FirestorePagingAdapter
+import com.firebase.ui.firestore.paging.FirestorePagingOptions
 import com.promisebooks.app.R
 import com.promisebooks.app.databinding.MarketItemBinding
 import com.promisebooks.app.model.Book
 import com.squareup.picasso.Picasso
 
-class BookAdapter(option: FirestoreRecyclerOptions<Book>, val clicked: Clicked): FirestoreRecyclerAdapter<Book, BookAdapter.BookHolder>(option) {
+class BookAdapter(option: FirestorePagingOptions<Book>, val clicked: Clicked): FirestorePagingAdapter<Book, BookAdapter.BookHolder>(option) {
 
 
 
@@ -47,3 +45,5 @@ class BookAdapter(option: FirestoreRecyclerOptions<Book>, val clicked: Clicked):
 interface Clicked{
     fun click(view:View, book: Book)
 }
+
+

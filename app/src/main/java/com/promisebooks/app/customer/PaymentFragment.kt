@@ -20,6 +20,7 @@ import com.promisebooks.app.auth.AuthActivity
 import com.promisebooks.app.databinding.PaymentFragmentBinding
 import com.promisebooks.app.model.*
 import com.promisebooks.app.util.AccountRecieved
+import com.promisebooks.app.util.K.Companion.alert
 import com.promisebooks.app.util.ProgressCheck
 import com.promisebooks.app.util.Transaction
 import java.text.SimpleDateFormat
@@ -195,6 +196,10 @@ class PaymentFragment : Fragment(), Transaction, AccountRecieved, ProgressCheck 
         builder?.create()?.show()
     }
 
+    override fun errorTransaction() {
+        activity?.let { alert("error", binding.progressCircular, it, false) }
+    }
+
     override fun recieved(banks: List<Data1>) {
         adapter.setBank(bank = banks.toMutableList())
         binding.recyclerView.adapter = adapter
@@ -203,12 +208,23 @@ class PaymentFragment : Fragment(), Transaction, AccountRecieved, ProgressCheck 
         binding.recyclerView.visibility = View.VISIBLE
     }
 
+    override fun errorAccount() {
+        activity?.let { alert("Couldn't Retrieve Bank Codes", binding.progressCircular, it, false) }
+
+    }
+
     override fun progress() {
         setData()
     }
 
-    override fun error() {
-        Toast.makeText(context, "error", Toast.LENGTH_SHORT).show()
+    override fun errorProgress() {
+        activity?.let { alert("error", binding.progressCircular, it, false) }
     }
+
+ /*   override fun error() {
+        Toast.makeText(context, "error", Toast.LENGTH_SHORT).show()
+    }*/
+
+
 
 }

@@ -18,6 +18,7 @@ import com.promisebooks.app.auth.AuthActivity
 import com.promisebooks.app.databinding.TransactionViewFragmentBinding
 import com.promisebooks.app.model.TransactionDetails
 import com.promisebooks.app.util.DetailRecieved
+import com.promisebooks.app.util.K
 
 class TransactionViewFragment : Fragment(), DetailRecieved {
     private lateinit var authListner: FirebaseAuth.AuthStateListener
@@ -91,13 +92,17 @@ class TransactionViewFragment : Fragment(), DetailRecieved {
     }
     override fun recieved(detail: MutableList<TransactionDetails>) {
         binding.progress.visibility = View.GONE
-      adapter.setDetail(detail)
+      //adapter.setDetail(detail)
         binding.recyclerView.adapter = adapter
         adapter.notifyDataSetChanged()
     }
 
-    override fun error() {
-       Toast.makeText(context, " Error", Toast.LENGTH_SHORT).show()
+    override fun errorDetail() {
+        activity?.let { K.alert("error in retrieving transactions", binding.progress, it , true) }
     }
+
+   /* override fun error() {
+       Toast.makeText(context, " Error", Toast.LENGTH_SHORT).show()
+    }*/
 
 }

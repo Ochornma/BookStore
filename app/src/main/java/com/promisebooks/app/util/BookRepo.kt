@@ -42,7 +42,7 @@ class BookRepo {
     val call: Call<USSDResponse> = RetrofitClient().getInstance().getApi().sendUSSDRequest(ussdRequest)
         call.enqueue(object : Callback<USSDResponse> {
             override fun onFailure(call: Call<USSDResponse>, t: Throwable) {
-              ussdRecieved.error()
+              ussdRecieved.errorTransaction()
             }
 
             override fun onResponse(call: Call<USSDResponse>, response: Response<USSDResponse>) {
@@ -61,7 +61,7 @@ class BookRepo {
         val call: Call<AccoutResponse> = RetrofitClient().getInstance().getApi().sendBankRequest(accounRequest)
         call.enqueue(object : Callback<AccoutResponse> {
             override fun onFailure(call: Call<AccoutResponse>, t: Throwable) {
-                ussdRecieved.error()
+                ussdRecieved.errorTransaction()
             }
 
             override fun onResponse(
@@ -88,7 +88,7 @@ class BookRepo {
         val call: Call<Banks> = RetrofitClient().getInstance().getApi().getBankCode()
         call.enqueue(object : Callback<Banks> {
             override fun onFailure(call: Call<Banks>, t: Throwable) {
-           accountRecieved.error()
+           accountRecieved.errorAccount()
             }
 
             override fun onResponse(call: Call<Banks>, response: Response<Banks>) {
@@ -105,11 +105,11 @@ class BookRepo {
 
     fun getTransaction(url: String, price: String, single: Boolean) {
         val detail: MutableList<TransactionDetails> = ArrayList<TransactionDetails>()
-        val request: JsonObjectRequest =
-            object : JsonObjectRequest(
+        val request: JsonObjectRequest = object : JsonObjectRequest(
                 Method.GET, url, null,
                 com.android.volley.Response.Listener { response: JSONObject ->
                     try {
+
                         if (single){
                             val data = response.getJSONArray("data")
                             val properties = data.getJSONObject(0)
@@ -118,7 +118,7 @@ class BookRepo {
                             if ((amount == price) and (status == "successful")){
                                 progressCheck.progress()
                             }else{
-                                progressCheck.error()
+                                progressCheck.errorProgress()
                             }
                         }else{
                             val data = response.getJSONArray("data")
@@ -137,9 +137,9 @@ class BookRepo {
                     } catch (e: JSONException) {
                         e.printStackTrace()
                         if (single){
-                            progressCheck.error()
+                            progressCheck.errorProgress()
                         } else{
-                            detailRecieved.error()
+                            detailRecieved.errorDetail()
                         }
 
                     }
@@ -147,9 +147,9 @@ class BookRepo {
                 com.android.volley.Response.ErrorListener { error: VolleyError ->
                     error.printStackTrace()
                     if (single){
-                        progressCheck.error()
+                        progressCheck.errorProgress()
                     } else{
-                        detailRecieved.error()
+                        detailRecieved.errorDetail()
                     }
 
                 }
@@ -165,8 +165,6 @@ class BookRepo {
                 }
 
             }
-
-
         mQueue!!.add(request)
     }
 

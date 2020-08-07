@@ -4,5 +4,5 @@ import com.promisebooks.app.model.TransactionDetails
 
 interface DetailRecieved {
     fun recieved(detail: MutableList<TransactionDetails>)
-    fun error()
+    fun errorDetail()
 }

@@ -12,8 +12,10 @@ import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.Navigation
+import androidx.paging.PagedList
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.firebase.ui.firestore.FirestoreRecyclerOptions
+import com.firebase.ui.firestore.paging.FirestorePagingOptions
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
@@ -59,9 +61,15 @@ class MarketFragment : Fragment(), Clicked{
 
     private fun setUpData() {
         val query = collection.orderBy("price", Query.Direction.ASCENDING)
-        val options = FirestoreRecyclerOptions.Builder<Book>()
-            .setQuery(query, Book::class.java)
+        val config = PagedList.Config.Builder()
+            .setInitialLoadSizeHint(8)
+            .setPageSize(6)
             .build()
+
+        val options = FirestorePagingOptions.Builder<Book>()
+            .setQuery(query, config, Book::class.java)
+            .build()
+
         adapter = BookAdapter(options, this)
         binding.recyclerView.setHasFixedSize(true)
         binding.recyclerView.layoutManager = LinearLayoutManager(context)
