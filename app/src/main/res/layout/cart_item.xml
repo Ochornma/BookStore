@@ -7,7 +7,7 @@
     <data>
         <variable
             name="message"
-            type="com.promisebooks.app.model.Book" />
+            type="com.promisebooks.app.model.Cart" />
     </data>
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
@@ -83,36 +83,61 @@
                         app:layout_constraintStart_toStartOf="@+id/duration"
                         app:layout_constraintTop_toBottomOf="@+id/duration" />
 
+                    <TextView
+                        android:id="@+id/price"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:maxLines="2"
+                        android:textColor="#90000000"
+                        android:textSize="15sp"
+                        android:textStyle="bold"
+                        app:layout_constraintStart_toStartOf="@+id/duration"
+                        app:layout_constraintTop_toBottomOf="@+id/title" />
+
+                    <TextView
+                        android:id="@+id/quantity"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="5dp"
+                        android:layout_marginRight="5dp"
+                        android:maxLines="2"
+                        android:textColor="#90000000"
+                        android:textSize="15sp"
+                        android:textStyle="bold"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/title" />
+
                     <Button
                         android:background="#0FFFFFFF"
                         android:backgroundTint="#0FFFFFFF"
-                        android:id="@+id/watch"
+                        android:id="@+id/refund"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="10dp"
                         android:layout_marginEnd="15dp"
+                        android:text="REFUND"
                         android:layout_marginRight="15dp"
                         android:fontFamily="@font/didact_gothic"
                         android:textSize="12sp"
                         android:textStyle="bold"
-                        app:layout_constraintEnd_toStartOf="@+id/cart"
-                        app:layout_constraintTop_toBottomOf="@id/title" />
+                        app:layout_constraintEnd_toStartOf="@+id/remove"
+                        app:layout_constraintTop_toBottomOf="@id/price" />
                     <!--    -->
                     <Button
                         android:background="#0FFFFFFF"
                         android:backgroundTint="#0FFFFFFF"
-                        android:id="@+id/cart"
+                        android:id="@+id/remove"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="10dp"
                         android:layout_marginEnd="10dp"
                         android:layout_marginRight="10dp"
                         android:fontFamily="@font/didact_gothic"
-                        android:text="Cart"
+                        android:text="Remove"
                         android:textSize="12sp"
                         android:textStyle="bold"
-                        app:layout_constraintEnd_toStartOf="@id/listen"
-                        app:layout_constraintTop_toBottomOf="@id/title" />
+                        app:layout_constraintEnd_toStartOf="@id/check_out"
+                        app:layout_constraintTop_toBottomOf="@id/price" />
 
 
 
@@ -120,18 +145,18 @@
                     <Button
                         android:background="#0FFFFFFF"
                         android:backgroundTint="#0FFFFFFF"
-                        android:id="@+id/listen"
+                        android:id="@+id/check_out"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="10dp"
                         android:layout_marginEnd="10dp"
                         android:layout_marginRight="10dp"
                         android:fontFamily="@font/didact_gothic"
-                        android:text="Buy"
+                        android:text="Check Out"
                         android:textSize="12sp"
                         android:textStyle="bold"
                         app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toBottomOf="@id/title" />
+                        app:layout_constraintTop_toBottomOf="@id/price" />
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
             </androidx.constraintlayout.widget.ConstraintLayout>

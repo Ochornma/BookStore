@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.google.firebase.auth.FirebaseAuth
@@ -21,6 +22,9 @@ import java.util.*
 class AuthFragment : Fragment() {
     private lateinit var binding: AuthFragmentBinding
     private lateinit var authListner: FirebaseAuth.AuthStateListener
+ private val activity1 by lazy {
+     FragmentActivity()
+ }
 
     companion object {
         fun newInstance() = AuthFragment()
@@ -53,17 +57,27 @@ class AuthFragment : Fragment() {
 
                 if (merchant(it.currentUser!!.email!!)){
                     FirebaseAuth.getInstance().removeAuthStateListener(authListner)
-                    val intent = Intent(activity?.applicationContext, MerchantActivity::class.java)
+                    /*val intent = Intent(activity?.application, MerchantActivity::class.java)
                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
-                    activity?.startActivity(intent)
+                    activity1.startActivity(intent)*/
+                    activity?.let {it1 ->
+                        it1.startActivity(Intent(it1, MerchantActivity::class.java)
+                            .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP))
+                        it1.finish()
+                        }
 
                 } else{
                     FirebaseAuth.getInstance().removeAuthStateListener(authListner)
-                    val intent = Intent(activity?.applicationContext, CustomerActivity::class.java)
+                   /* val intent = Intent(activity?.application, CustomerActivity::class.java)
                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
-                    activity?.startActivity(intent)
+                    activity1.startActivity(intent)*/
+                    activity?.let {it1 ->
+                        it1.startActivity(Intent(it1, CustomerActivity::class.java)
+                            .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP))
+                        it1.finish()
+                    }
                 }
-                activity?.finish()
+                //activity1.finish()
             }
         }
         FirebaseAuth.getInstance().addAuthStateListener(authListner)

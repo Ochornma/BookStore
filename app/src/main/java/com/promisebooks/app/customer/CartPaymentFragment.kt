@@ -30,50 +30,51 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.promisebooks.app.R
 import com.promisebooks.app.auth.AuthActivity
-import com.promisebooks.app.databinding.PaymentFragmentBinding
+import com.promisebooks.app.databinding.CartPaymentFragmentBinding
 import com.promisebooks.app.model.*
 import com.promisebooks.app.util.AccountRecieved
-import com.promisebooks.app.util.K.Companion.alert
+import com.promisebooks.app.util.K
 import com.promisebooks.app.util.ProgressCheck
 import com.promisebooks.app.util.Transaction
 import java.text.SimpleDateFormat
 import java.util.*
 
-
-class PaymentFragment : Fragment(), Transaction, AccountRecieved, ProgressCheck, CardPaymentCallback {
-    private lateinit var binding: PaymentFragmentBinding
+class CartPaymentFragment : Fragment(), Transaction, AccountRecieved, ProgressCheck, CardPaymentCallback {
+    private lateinit var binding: CartPaymentFragmentBinding
     private lateinit var authListner: FirebaseAuth.AuthStateListener
     private var db = FirebaseFirestore.getInstance()
     private var collectionUser = db.collection("Users")
     private var collectionProduct = db.collection("BoughtProducts")
+    private var collectionCart = db.collection("Cart")
     private var email: String = " "
     private var ref = " "
     private var uiid = " "
     private var name = ""
     private var phone = ""
-   private var year = Calendar.getInstance().get(Calendar.YEAR)
+    private var year = Calendar.getInstance().get(Calendar.YEAR)
     private var month = Calendar.getInstance().get(Calendar.MONTH)
     private var day = Calendar.getInstance().get(Calendar.DATE)
     private lateinit var util: RaveVerificationUtils
     private var cardPayManager: CardPaymentManager? = null
     private var card: Card? = null
     private var raveManager: RavePayManager? = null
-
+    private lateinit var adapter: PaymentAdapter
+    private lateinit var cart: Cart
+    private var price = 0
     companion object {
-        fun newInstance() = PaymentFragment()
+        fun newInstance() = CartPaymentFragment()
     }
 
-    private lateinit var viewModel: PaymentViewModel
-    private lateinit var adapter: PaymentAdapter
-    private lateinit var book: Book
+    private lateinit var viewModel: CartPaymentViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        binding = DataBindingUtil.inflate(inflater, R.layout.payment_fragment, container, false)
-        val args: PaymentFragmentArgs by navArgs()
-        book = args.book
+        binding = DataBindingUtil.inflate(inflater, R.layout.cart_payment_fragment, container, false)
+        val args: CartPaymentFragmentArgs by navArgs()
+        cart = args.cart
+        binding.quantityInput.setText("${cart.qty}")
         util = RaveVerificationUtils(this, false, "FLWPUBK-b6f6a82a3ff8ba0fbfcaa5a99a6bec04-X")
         binding.progressCircular.visibility = View.VISIBLE
         binding.paymentContainer.visibility = View.GONE
@@ -88,18 +89,19 @@ class PaymentFragment : Fragment(), Transaction, AccountRecieved, ProgressCheck,
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        val factory = context?.let { PaymentFactory(this, this, it, this) }!!
-        viewModel = ViewModelProvider(this, factory).get(PaymentViewModel::class.java)
+        val factory = context?.let { CartPaymentFactory(this, this, it, this) }!!
+        viewModel = ViewModelProvider(this, factory).get(CartPaymentViewModel::class.java)
         viewModel.getBank()
         val c = Calendar.getInstance()
         val sdf = SimpleDateFormat("yyyy-MM-ddHH:mm:ss", Locale.ENGLISH)
         val strDate: String = sdf.format(c.time)
 
         binding.transfer.setOnClickListener {
+            price = binding.quantityInput.text.toString().toInt() * cart.price.toInt()
             binding.progressCircular.visibility = View.VISIBLE
             ref = email + "_" + strDate
             val accounRequest = AccounRequest(
-                book.price,
+                "$price",
                 " ",
                 "NGN",
                 " ",
@@ -115,12 +117,13 @@ class PaymentFragment : Fragment(), Transaction, AccountRecieved, ProgressCheck,
         }
 
         binding.ussd.setOnClickListener {
+            price = binding.quantityInput.text.toString().toInt() * cart.price.toInt()
             if (binding.emailInput.text.toString().isNotEmpty()){
                 binding.progressCircular.visibility = View.VISIBLE
                 ref = email + "_" + strDate
                 val accounRequest1 = USSDRequest(
                     binding.emailInput.text.toString(),
-                    book.price,
+                    "$price",
                     "NGN",
                     email,
                     name,
@@ -149,8 +152,9 @@ class PaymentFragment : Fragment(), Transaction, AccountRecieved, ProgressCheck,
         }
 
         binding.submit.setOnClickListener {
+            price = binding.quantityInput.text.toString().toInt() * cart.price.toInt()
             ref = email + "_" + strDate
-            raveManager = RaveNonUIManager().setAmount(book.price.toDouble())
+            raveManager = RaveNonUIManager().setAmount(price.toDouble())
                 .setCurrency("NGN")
                 .setEmail(email)
                 .setPhoneNumber(phone)
@@ -183,10 +187,10 @@ class PaymentFragment : Fragment(), Transaction, AccountRecieved, ProgressCheck,
             cvvInput.setText("")
             firstNameInput.setText("")
             lastNameInput.setText("")
+            quantityInput.setText("")
             invalidateAll()
         }
     }
-
     override fun onStart() {
         super.onStart()
         setUpListener()
@@ -201,12 +205,12 @@ class PaymentFragment : Fragment(), Transaction, AccountRecieved, ProgressCheck,
     private fun setUpListener() {
         authListner = FirebaseAuth.AuthStateListener {
             if (it.currentUser != null) {
-               /* if (merchant(it.currentUser!!.email!!)) {
-                    val intent = Intent(activity, MerchantActivity::class.java)
-                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
-                    startActivity(intent)
-                    activity?.finish()
-                }*/
+                /* if (merchant(it.currentUser!!.email!!)) {
+                     val intent = Intent(activity, MerchantActivity::class.java)
+                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
+                     startActivity(intent)
+                     activity?.finish()
+                 }*/
                 email = FirebaseAuth.getInstance().currentUser?.email!!
                 uiid = FirebaseAuth.getInstance().currentUser?.uid!!
                 collectionUser.document(uiid).get().addOnSuccessListener {it1 ->
@@ -220,12 +224,13 @@ class PaymentFragment : Fragment(), Transaction, AccountRecieved, ProgressCheck,
                 }
             } else {
                 FirebaseAuth.getInstance().removeAuthStateListener(authListner)
-              /*  val intent = Intent(activity?.applicationContext, AuthActivity::class.java)
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
-                activity?.startActivity(intent)
-                activity?.finish()*/
+                /*  val intent = Intent(activity?.applicationContext, AuthActivity::class.java)
+                  intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
+                  activity?.startActivity(intent)
+                  activity?.finish()*/
                 activity?.let {it1 ->
-                    it1.startActivity(Intent(it1, AuthActivity::class.java)
+                    it1.startActivity(
+                        Intent(it1, AuthActivity::class.java)
                         .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP))
                     it1.finish()}
             }
@@ -235,16 +240,19 @@ class PaymentFragment : Fragment(), Transaction, AccountRecieved, ProgressCheck,
     }
 
     private fun setData() {
-        val bookBought = BookBought(book.title, book.image, book.description, book.price, uiid)
+        val bookBought = BookBought(cart.title, cart.image, cart.description, cart.price, uiid)
         collectionProduct.document(ref).set(bookBought).addOnSuccessListener {
-            binding.progressCircular.visibility = View.GONE
-            val builder: AlertDialog.Builder? = context?.let { AlertDialog.Builder(it) }
-            builder?.setNegativeButton(activity?.resources?.getString(R.string.cancel)) { dialog, _ ->
-                dialog.dismiss()
-                // Since we cannot proceed, we should finish the activity
+            collectionCart.document("${cart.title}_$email").delete().addOnSuccessListener {
+                binding.progressCircular.visibility = View.GONE
+                val builder: AlertDialog.Builder? = context?.let { AlertDialog.Builder(it) }
+                builder?.setNegativeButton(activity?.resources?.getString(R.string.cancel)) { dialog, _ ->
+                    dialog.dismiss()
+                    // Since we cannot proceed, we should finish the activity
+                }
+                builder?.setMessage("SUCCESSFUL")
+                builder?.create()?.show()
             }
-            builder?.setMessage("SUCCESSFUL")
-            builder?.create()?.show()
+
         }
     }
 
@@ -311,7 +319,7 @@ class PaymentFragment : Fragment(), Transaction, AccountRecieved, ProgressCheck,
         builder?.setPositiveButton("Confirm my Payment"
         ) { dialog, _ ->
             binding.progressCircular.visibility = View.VISIBLE
-            viewModel.getProgress("https://api.flutterwave.com/v3/transactions?from=$year-${month+1}-$day&to=$year-${month+1}-$day&tx_ref=$ref", book.price)
+            viewModel.getProgress("https://api.flutterwave.com/v3/transactions?from=$year-${month+1}-$day&to=$year-${month+1}-$day&tx_ref=$ref", "$price")
             dialog.dismiss()
         }
         builder?.setNegativeButton(activity?.resources?.getString(R.string.cancel)) { dialog, _ ->
@@ -326,7 +334,7 @@ class PaymentFragment : Fragment(), Transaction, AccountRecieved, ProgressCheck,
     }
 
     override fun errorTransaction() {
-        activity?.let { alert("error", binding.progressCircular, it, false) }
+        activity?.let { K.alert("error", binding.progressCircular, it, false) }
     }
 
     override fun recieved(banks: List<Data1>) {
@@ -338,7 +346,14 @@ class PaymentFragment : Fragment(), Transaction, AccountRecieved, ProgressCheck,
     }
 
     override fun errorAccount() {
-        activity?.let { alert("Couldn't Retrieve Bank Codes", binding.progressCircular, it, false) }
+        activity?.let {
+            K.alert(
+                "Couldn't Retrieve Bank Codes",
+                binding.progressCircular,
+                it,
+                false
+            )
+        }
 
     }
 
@@ -347,16 +362,16 @@ class PaymentFragment : Fragment(), Transaction, AccountRecieved, ProgressCheck,
     }
 
     override fun errorProgress() {
-        activity?.let { alert("error", binding.progressCircular, it, false) }
+        activity?.let { K.alert("error", binding.progressCircular, it, false) }
     }
 
     override fun collectAddress() {
         Toast.makeText(context, "Please Wait", Toast.LENGTH_SHORT).show()
-     util.showAddressScreen()
+        util.showAddressScreen()
     }
 
     override fun onSuccessful(flwRef: String?) {
-        activity?.let { alert("Successful", binding.progressCircular, it, false) }
+        activity?.let { K.alert("Successful", binding.progressCircular, it, false) }
     }
 
     override fun showProgressIndicator(active: Boolean) {
@@ -376,7 +391,7 @@ class PaymentFragment : Fragment(), Transaction, AccountRecieved, ProgressCheck,
 
     override fun showAuthenticationWebPage(authenticationUrl: String?) {
         Toast.makeText(context, "Please Wait", Toast.LENGTH_SHORT).show()
-       util.showWebpageVerificationScreen(authenticationUrl)
+        util.showWebpageVerificationScreen(authenticationUrl)
     }
 
     override fun collectOtp(message: String?) {
@@ -384,17 +399,11 @@ class PaymentFragment : Fragment(), Transaction, AccountRecieved, ProgressCheck,
     }
 
     override fun onError(errorMessage: String?, flwRef: String?) {
-        activity?.let { alert("error", binding.progressCircular, it, false) }
+        activity?.let { K.alert("error", binding.progressCircular, it, false) }
     }
 
     override fun collectCardPin() {
-       util.showPinScreen()
+        util.showPinScreen()
     }
-
-    /*   override fun error() {
-           Toast.makeText(context, "error", Toast.LENGTH_SHORT).show()
-       }*/
-
-
 
 }

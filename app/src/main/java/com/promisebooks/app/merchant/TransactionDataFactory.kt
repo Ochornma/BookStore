@@ -8,7 +8,7 @@ import androidx.paging.PageKeyedDataSource
 import com.promisebooks.app.model.TransactionDetails
 
 
-class TransactionDataFactory(val context: Context, val url: String): DataSource.Factory<Int, TransactionDetails>() {
+class TransactionDataFactory(val context: Context, private val url: String): DataSource.Factory<Int, TransactionDetails>() {
 
     private val itemLiveDataSource = MutableLiveData<PageKeyedDataSource<Int, TransactionDetails>>()
     override fun create(): DataSource<Int, TransactionDetails> {

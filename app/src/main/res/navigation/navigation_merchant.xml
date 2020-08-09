@@ -61,4 +61,22 @@
             android:name="ref"
             app:argType="string" />
     </fragment>
+    <fragment
+        android:id="@+id/cartFragment"
+        android:name="com.promisebooks.app.customer.CartFragment"
+        android:label="cart_fragment"
+        tools:layout="@layout/cart_fragment" >
+        <action
+            android:id="@+id/action_cartFragment_to_cartPaymentFragment"
+            app:destination="@id/cartPaymentFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/cartPaymentFragment"
+        android:name="com.promisebooks.app.customer.CartPaymentFragment"
+        android:label="cart_payment_fragment"
+        tools:layout="@layout/cart_payment_fragment" >
+        <argument
+            android:name="cart"
+            app:argType="com.promisebooks.app.model.Cart" />
+    </fragment>
 </navigation>

@@ -7,7 +7,7 @@
     <data>
         <variable
             name="message"
-            type="com.promisebooks.app.model.Book" />
+            type="com.promisebooks.app.model.Refund" />
     </data>
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
@@ -75,7 +75,7 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:maxLines="2"
-                        android:text="@={message.description}"
+                        android:text="@={message.customer}"
                         android:textColor="#000"
                         android:textSize="20sp"
                         android:textStyle="bold"
@@ -83,51 +83,18 @@
                         app:layout_constraintStart_toStartOf="@+id/duration"
                         app:layout_constraintTop_toBottomOf="@+id/duration" />
 
+
                     <Button
                         android:background="#0FFFFFFF"
                         android:backgroundTint="#0FFFFFFF"
-                        android:id="@+id/watch"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="10dp"
-                        android:layout_marginEnd="15dp"
-                        android:layout_marginRight="15dp"
-                        android:fontFamily="@font/didact_gothic"
-                        android:textSize="12sp"
-                        android:textStyle="bold"
-                        app:layout_constraintEnd_toStartOf="@+id/cart"
-                        app:layout_constraintTop_toBottomOf="@id/title" />
-                    <!--    -->
-                    <Button
-                        android:background="#0FFFFFFF"
-                        android:backgroundTint="#0FFFFFFF"
-                        android:id="@+id/cart"
+                        android:id="@+id/check_out"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="10dp"
                         android:layout_marginEnd="10dp"
                         android:layout_marginRight="10dp"
                         android:fontFamily="@font/didact_gothic"
-                        android:text="Cart"
-                        android:textSize="12sp"
-                        android:textStyle="bold"
-                        app:layout_constraintEnd_toStartOf="@id/listen"
-                        app:layout_constraintTop_toBottomOf="@id/title" />
-
-
-
-
-                    <Button
-                        android:background="#0FFFFFFF"
-                        android:backgroundTint="#0FFFFFFF"
-                        android:id="@+id/listen"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="10dp"
-                        android:layout_marginEnd="10dp"
-                        android:layout_marginRight="10dp"
-                        android:fontFamily="@font/didact_gothic"
-                        android:text="Buy"
+                        android:text="Confirm Payment"
                         android:textSize="12sp"
                         android:textStyle="bold"
                         app:layout_constraintEnd_toEndOf="parent"

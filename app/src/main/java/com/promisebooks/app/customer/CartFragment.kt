@@ -11,46 +11,46 @@ import androidx.databinding.DataBindingUtil
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.promisebooks.app.R
 import com.promisebooks.app.auth.AuthActivity
-import com.promisebooks.app.databinding.MyBookFragmentBinding
-import com.promisebooks.app.model.BookBought
+import com.promisebooks.app.databinding.CartFragmentBinding
+import com.promisebooks.app.model.Cart
+import com.promisebooks.app.model.Refund
 import java.util.*
 
-
-class MyBookFragment : Fragment() {
-    private lateinit var binding:MyBookFragmentBinding
-    private lateinit var adapater: MyBooksAdapater
+class CartFragment : Fragment(), CartAdapter.Clicked {
+    private lateinit var binding: CartFragmentBinding
     private var db = FirebaseFirestore.getInstance()
-
-    private var collectionProduct = db.collection("BoughtProducts")
+    private var collectionCart = db.collection("Cart")
+    private var collectionRefund = db.collection("Refund")
     private var user = FirebaseAuth.getInstance().currentUser
     private var uiid = " "
+    private var email = " "
     private lateinit var drawer: DrawerLayout
     private lateinit var authListner: FirebaseAuth.AuthStateListener
+    private lateinit var adapater:CartAdapter
 
     companion object {
-        fun newInstance() = MyBookFragment()
+        fun newInstance() = CartFragment()
     }
 
-    private lateinit var viewModel: MyBookViewModel
+    private lateinit var viewModel: CartViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        binding = DataBindingUtil.inflate(inflater, R.layout.my_book_fragment, container, false)
+        binding = DataBindingUtil.inflate(inflater, R.layout.cart_fragment, container, false)
         drawer = activity?.findViewById(R.id.drawer_layout)!!
         binding.menu.setOnClickListener {
             drawer.openDrawer(GravityCompat.START)
         }
-
-
         binding.swipeRefresh.isRefreshing = true
-        adapater = MyBooksAdapater()
+        adapater = CartAdapter(this)
         binding.recyclerView.setHasFixedSize(true)
         binding.recyclerView.layoutManager = LinearLayoutManager(context)
         binding.recyclerView.adapter = adapater
@@ -59,7 +59,7 @@ class MyBookFragment : Fragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        viewModel = ViewModelProvider(this).get(MyBookViewModel::class.java)
+        viewModel = ViewModelProvider(this).get(CartViewModel::class.java)
         binding.swipeRefresh.setOnRefreshListener {
             getData()
         }
@@ -68,18 +68,20 @@ class MyBookFragment : Fragment() {
     private fun setUpListener(){
         authListner = FirebaseAuth.AuthStateListener { it ->
             if (it.currentUser != null){
-             /*   if (merchant(it.currentUser!!.email!!)){
-                    val intent = Intent(activity, MerchantActivity::class.java)
-                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
-                    startActivity(intent)
-                    activity?.finish()
-                }*/
+                /*   if (merchant(it.currentUser!!.email!!)){
+                       val intent = Intent(activity, MerchantActivity::class.java)
+                       intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
+                       startActivity(intent)
+                       activity?.finish()
+                   }*/
                 uiid = user?.uid!!
+                email = user?.email!!
                 getData()
             }else{
                 FirebaseAuth.getInstance().removeAuthStateListener(authListner)
-               activity?.let {it1 ->
-                    it1.startActivity(Intent(it1, AuthActivity::class.java)
+                activity?.let {it1 ->
+                    it1.startActivity(
+                        Intent(it1, AuthActivity::class.java)
                         .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP))
                     it1.finish()}
 
@@ -90,23 +92,19 @@ class MyBookFragment : Fragment() {
         FirebaseAuth.getInstance().addAuthStateListener(authListner)
     }
 
-/*    private fun merchant(email: String): Boolean{
-        return (email.substring(email.indexOf("@") + 1).toLowerCase(Locale.ROOT)) == "merchant.com"
-    }*/
-
     private fun getData(){
-        val books: MutableList<BookBought> = ArrayList()
-        collectionProduct.whereEqualTo("id", uiid).get().addOnSuccessListener {
+        val carts: MutableList<Cart> = ArrayList()
+        collectionCart.whereEqualTo("id", uiid).get().addOnSuccessListener {
             if (!it.isEmpty){
 
                 val list = it.documents
                 for (item in list){
-                    val book = item.toObject(BookBought::class.java)
-                    if (book != null) {
-                        books.add(book)
+                    val cart = item.toObject(Cart::class.java)
+                    if (cart != null) {
+                        carts.add(cart)
                     }
                 }
-                adapater.setBook(books)
+                adapater.setCart(carts)
                 binding.recyclerView.adapter = adapater
                 adapater.notifyDataSetChanged()
                 binding.swipeRefresh.isRefreshing = false
@@ -119,36 +117,10 @@ class MyBookFragment : Fragment() {
 
     }
 
-/*    private fun setUpData() {
-        val query = collectionProduct.orderBy("price")
-            .startAt(uiid)
-            .endAt(uiid)*//*.whereEqualTo("id", uiid)*//*
-          *//*.orderBy("price", Query.Direction.ASCENDING).whereEqualTo("id", uiid)*//*
-        val config = PagedList.Config.Builder()
-            .setEnablePlaceholders(false)
-            .setPrefetchDistance(2)
-            .setPageSize(10)
-            .build()
-
-        val options = FirestorePagingOptions.Builder<BookBought>()
-            .setLifecycleOwner(this)
-            .setQuery(query, config, BookBought::class.java)
-            .build()
-
-
-        adapater = context?.let { MyBooksAdapater(options , binding.swipeRefresh, it) }!!
-        adapater.updateOptions(options)
-        binding.recyclerView.setHasFixedSize(true)
-        binding.recyclerView.layoutManager = LinearLayoutManager(context)
-        binding.recyclerView.adapter = adapater
-        adapater.startListening()
-        adapater.notifyDataSetChanged()
-
-    }*/
     override fun onStart() {
         super.onStart()
         setUpListener()
-       FirebaseAuth.getInstance().addAuthStateListener(authListner)
+        FirebaseAuth.getInstance().addAuthStateListener(authListner)
     }
 
 
@@ -160,5 +132,28 @@ class MyBookFragment : Fragment() {
         FirebaseAuth.getInstance().removeAuthStateListener(authListner)
     }
 
-}
+    override fun remove(cart: Cart) {
+        binding.swipeRefresh.isRefreshing = true
+       collectionCart.document("${cart.title}_$email").delete().addOnSuccessListener {
+           Toast.makeText(context, "Removed from cart", Toast.LENGTH_SHORT).show()
+           getData()
+       }
+    }
 
+    override fun refund(cart: Cart) {
+        binding.swipeRefresh.isRefreshing = true
+        val refund = Refund(cart.image, cart.title, cart.name, cart.ref)
+        collectionRefund.document().set(refund).addOnSuccessListener {
+            collectionCart.document("${cart.title}_$email").delete().addOnSuccessListener {
+                Toast.makeText(context, "Refund Requested", Toast.LENGTH_SHORT).show()
+                getData()
+            }
+        }
+    }
+
+    override fun pay(cart: Cart, view: View) {
+        val action = CartFragmentDirections.actionCartFragmentToCartPaymentFragment(cart)
+        Navigation.findNavController(view).navigate(action)
+    }
+
+}

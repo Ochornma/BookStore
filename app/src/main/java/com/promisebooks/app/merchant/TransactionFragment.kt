@@ -91,10 +91,14 @@ class TransactionFragment : Fragment() {
 
             }else{
                 FirebaseAuth.getInstance().removeAuthStateListener(authListner)
-                val intent = Intent(activity?.applicationContext, AuthActivity::class.java)
+                /*val intent = Intent(activity?.applicationContext, AuthActivity::class.java)
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
                 activity?.startActivity(intent)
-                activity?.finish()
+                activity?.finish()*/
+                activity?.let {it1 ->
+                    it1.startActivity(Intent(it1, AuthActivity::class.java)
+                        .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP))
+                    it1.finish()}
             }
 
         }

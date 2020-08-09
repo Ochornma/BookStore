@@ -11,7 +11,13 @@
         android:title="My Books" />
 
     <item
+        android:id="@+id/cartFragment"
+        android:icon="@drawable/ic_cart"
+        android:title="Cart"/>
+
+    <item
         android:id="@+id/deleteFragment"
         android:icon="@drawable/ic_setting"
         android:title="Mangae Account" />
+
 </menu>

@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -50,9 +51,14 @@ class TransactionViewFragment : Fragment(), DetailRecieved {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        val factory = context?.let { TransactionFactory(this, it) }!!
+        val factory = context?.let { TransactionFactory(this, it, url) }!!
         viewModel = ViewModelProvider(this, factory).get(TransactionViewViewModel::class.java)
-        viewModel.transact(url)
+       // viewModel.transact(url)
+        viewModel.trans().observe(viewLifecycleOwner, Observer {
+            adapter.submitList(it)
+            binding.progress.visibility = View.GONE
+        })
+        binding.recyclerView.adapter = adapter
     }
 
 
@@ -68,10 +74,14 @@ class TransactionViewFragment : Fragment(), DetailRecieved {
 
             }else{
                 FirebaseAuth.getInstance().removeAuthStateListener(authListner)
-                val intent = Intent(activity?.applicationContext, AuthActivity::class.java)
+                /*val intent = Intent(activity?.applicationContext, AuthActivity::class.java)
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
                 activity?.startActivity(intent)
-                activity?.finish()
+                activity?.finish()*/
+                activity?.let {it1 ->
+                    it1.startActivity(Intent(it1, AuthActivity::class.java)
+                        .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP))
+                    it1.finish()}
             }
 
         }
@@ -93,8 +103,8 @@ class TransactionViewFragment : Fragment(), DetailRecieved {
     override fun recieved(detail: MutableList<TransactionDetails>) {
         binding.progress.visibility = View.GONE
       //adapter.setDetail(detail)
-        binding.recyclerView.adapter = adapter
-        adapter.notifyDataSetChanged()
+        //binding.recyclerView.adapter = adapter
+       // adapter.notifyDataSetChanged()
     }
 
     override fun errorDetail() {

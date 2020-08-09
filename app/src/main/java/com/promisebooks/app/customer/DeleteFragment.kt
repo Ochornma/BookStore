@@ -52,15 +52,31 @@ class DeleteFragment : Fragment() {
 
 
         binding.delete.setOnClickListener {
-            val credential = EmailAuthProvider
-                .getCredential(email, binding.passwordInput.text.toString())
-            FirebaseAuth.getInstance().currentUser?.reauthenticate(credential)?.addOnSuccessListener {
-                Toast.makeText(context, "Account Deleted", Toast.LENGTH_SHORT).show()
+            if (binding.passwordInput.text.toString().isNotEmpty() and email.trim().isNotEmpty()){
+                val credential = EmailAuthProvider
+                    .getCredential(email, binding.passwordInput.text.toString())
+                FirebaseAuth.getInstance().currentUser?.reauthenticate(credential)?.addOnSuccessListener {
+                    FirebaseAuth.getInstance().currentUser?.delete()?.addOnSuccessListener {
+                        Toast.makeText(context, "Account Deleted", Toast.LENGTH_SHORT).show()
+                        activity?.let {it1 ->
+                            it1.startActivity(Intent(it1, AuthActivity::class.java)
+                                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP))
+                            it1.finish()}
+                    }
+
+                }
+            }else{
+                Toast.makeText(context, "Enter your PASSWORD", Toast.LENGTH_SHORT).show()
             }
+
         }
 
         binding.signOut.setOnClickListener {
             FirebaseAuth.getInstance().signOut()
+            activity?.let {it1 ->
+                it1.startActivity(Intent(it1, AuthActivity::class.java)
+                    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP))
+                it1.finish()}
         }
     }
 
@@ -76,10 +92,14 @@ class DeleteFragment : Fragment() {
                 email = it.currentUser?.email!!
             }else{
                 FirebaseAuth.getInstance().removeAuthStateListener(authListner)
-                val intent = Intent(activity?.applicationContext, AuthActivity::class.java)
+              /*  val intent = Intent(activity?.applicationContext, AuthActivity::class.java)
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
                 activity?.startActivity(intent)
-                activity?.finish()
+                activity?.finish()*/
+                activity?.let {it1 ->
+                    it1.startActivity(Intent(it1, AuthActivity::class.java)
+                        .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP))
+                    it1.finish()}
             }
 
         }

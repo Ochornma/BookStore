@@ -92,7 +92,7 @@ class TransactionDataSource(val context: Context, val url: String): PageKeyedDat
                     e.printStackTrace()
                 }
                 val key: Int? = if (params.key > 1){
-                    params.key
+                    params.key + 1
                 }else{
                     null
                 }
@@ -140,7 +140,7 @@ class TransactionDataSource(val context: Context, val url: String): PageKeyedDat
                     e.printStackTrace()
                 }
                 val key: Int? = if (params.key > 1){
-                    params.key
+                    params.key - 1
                 }else{
                     null
                 }

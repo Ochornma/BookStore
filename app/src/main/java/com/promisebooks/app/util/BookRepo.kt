@@ -1,19 +1,21 @@
 package com.promisebooks.app.util
 
 import android.content.Context
-import android.util.Log
+import androidx.lifecycle.LiveData
+import androidx.paging.LivePagedListBuilder
+import androidx.paging.PageKeyedDataSource
+import androidx.paging.PagedList
 import com.android.volley.AuthFailureError
 import com.android.volley.RequestQueue
 import com.android.volley.VolleyError
 import com.android.volley.toolbox.JsonObjectRequest
+import com.promisebooks.app.merchant.TransactionDataFactory
 import com.promisebooks.app.model.*
 import org.json.JSONException
 import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import java.util.*
-import kotlin.collections.ArrayList
 
 
 class BookRepo {
@@ -23,12 +25,28 @@ class BookRepo {
     private lateinit var context: Context
     private lateinit var progressCheck: ProgressCheck
     private var mQueue: RequestQueue? = null
+   lateinit var itemPagedList: LiveData<PagedList<TransactionDetails>>
+    private lateinit var liveDataSource: LiveData<PageKeyedDataSource<Int, TransactionDetails>>
 
-    constructor(detail: DetailRecieved, context: Context){
+
+    constructor(detail: DetailRecieved, context: Context, url: String){
         this.detailRecieved = detail
         mQueue = VolleyRequest.getVolley(context)
+        val itemDataSourceFactory = TransactionDataFactory(context, url)
+        liveDataSource = itemDataSourceFactory.getItemLiveDataSource()
+
+        val config = PagedList.Config.Builder()
+            .setEnablePlaceholders(false)
+            .setInitialLoadSizeHint(14)
+            .setPageSize(7)
+            .build()
+
+        itemPagedList = LivePagedListBuilder<Int, TransactionDetails>(itemDataSourceFactory, config).build()
     }
 
+    constructor(progressCheck: ProgressCheck){
+        this.progressCheck = progressCheck
+    }
     constructor(accountRecieved: AccountRecieved, ussdRecieved: Transaction, context: Context, progressCheck: ProgressCheck){
         this.accountRecieved = accountRecieved
         this.ussdRecieved = ussdRecieved
@@ -166,6 +184,8 @@ class BookRepo {
 
             }
         mQueue!!.add(request)
+
+
     }
 
 }

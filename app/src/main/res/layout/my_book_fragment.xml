@@ -27,16 +27,12 @@
             android:padding="20dp"
             tools:targetApi="lollipop" />
 
-        <ProgressBar
-            android:layout_width="0dp"
-            android:layout_height="50dp"
-            android:id="@+id/progreess"
-            android:layout_gravity="center"
-            android:layout_weight="4"
-            android:visibility="gone"/>
     </LinearLayout>
 
-
+<androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:id="@+id/swipe_refresh">
 
     <androidx.recyclerview.widget.RecyclerView
         android:layout_width="match_parent"
@@ -44,7 +40,7 @@
         tools:listitem="@layout/book_item"
         android:id="@+id/recycler_view"/>
 
-
+</androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
 </LinearLayout>
 </layout>
