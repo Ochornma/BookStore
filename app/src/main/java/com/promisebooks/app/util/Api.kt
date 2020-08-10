@@ -14,7 +14,7 @@ import retrofit2.http.*
 interface Api {
     @Headers(
         "Content-type: application/json",
-        "Authorization: Bearer FLWSECK-2047ac195430e50a46398fc9910921cb-X"
+        "Authorization: Bearer FLWSECK_TEST-d99052ada1e92bfaef644579c8585b83-X"
     )
     @POST("charges?type=ussd")
     fun sendUSSDRequest(@Body ussdRequest: USSDRequest): Call<USSDResponse>
@@ -22,7 +22,7 @@ interface Api {
 
     @Headers(
         "Content-type: application/json",
-        "Authorization: Bearer FLWSECK-2047ac195430e50a46398fc9910921cb-X"
+        "Authorization: Bearer FLWSECK_TEST-d99052ada1e92bfaef644579c8585b83-X"
     )
     @POST("charges?type=bank_transfer")
     fun sendBankRequest(@Body bankRequest: AccounRequest): Call<AccoutResponse>
@@ -30,7 +30,7 @@ interface Api {
 
     @Headers(
         "Content-type: application/json",
-        "Authorization: Bearer FLWSECK-2047ac195430e50a46398fc9910921cb-X"
+        "Authorization: Bearer FLWSECK_TEST-d99052ada1e92bfaef644579c8585b83-X"
     )
     @POST("payments")
     fun sendRegister(@Body regRequest: Registeration): Call<RegisterationResponse>
@@ -38,7 +38,7 @@ interface Api {
 
     @Headers(
         "Content-type: application/json",
-        "Authorization: Bearer FLWSECK-2047ac195430e50a46398fc9910921cb-X"
+        "Authorization: Bearer FLWSECK_TEST-d99052ada1e92bfaef644579c8585b83-X"
     )
     @GET("transactions")
     fun getTransaction(
@@ -50,7 +50,7 @@ interface Api {
 
     @Headers(
         "Content-type: application/json",
-        "Authorization: Bearer FLWSECK-2047ac195430e50a46398fc9910921cb-X"
+        "Authorization: Bearer FLWSECK_TEST-d99052ada1e92bfaef644579c8585b83-X"
     )
     @GET("transactions")
     fun getAllTransaction(
@@ -61,7 +61,7 @@ interface Api {
 
     @Headers(
         "Content-type: application/json",
-        "Authorization: Bearer FLWSECK-2047ac195430e50a46398fc9910921cb-X"
+        "Authorization: Bearer FLWSECK_TEST-d99052ada1e92bfaef644579c8585b83-X"
     )
     @GET("banks/NG")
     fun getBankCode(): Call<Banks>

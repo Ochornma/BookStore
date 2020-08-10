@@ -167,9 +167,9 @@ class PaymentFragment : Fragment(), Transaction, AccountRecieved, ProgressCheck,
                 .setlName(binding.lastNameInput.text.toString())
                 .setTxRef(ref)
                 .setNarration("Promise Book Store")
-                .setEncryptionKey("2047ac195430353ccfdfa252")
-                .setPublicKey("FLWPUBK-b6f6a82a3ff8ba0fbfcaa5a99a6bec04-X")
-                .onStagingEnv(false)
+                .setEncryptionKey("FLWSECK_TEST6de42121a4d6")
+                .setPublicKey("FLWPUBK_TEST-d38161cd5980f1e8e447620609620afa-X")
+                .onStagingEnv(true)
                 .initialize()
             cardPayManager = CardPaymentManager(raveManager as RaveNonUIManager?, this, null)
             card = Card(

@@ -185,7 +185,7 @@ class BookRepo {
                         HashMap()
                     headers["Content-type"] =
                         "application/json"
-                    headers["Authorization"] = "Bearer FLWSECK-2047ac195430e50a46398fc9910921cb-X"
+                    headers["Authorization"] = "Bearer FLWSECK_TEST-d99052ada1e92bfaef644579c8585b83-X"
                     return headers
                 }
 
@@ -230,7 +230,7 @@ class BookRepo {
                     HashMap()
                 headers["Content-type"] =
                     "application/json"
-                headers["Authorization"] = "Bearer FLWSECK-2047ac195430e50a46398fc9910921cb-X"
+                headers["Authorization"] = "Bearer FLWSECK_TEST-d99052ada1e92bfaef644579c8585b83-X"
                 return headers
             }
 

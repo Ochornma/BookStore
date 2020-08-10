@@ -42,7 +42,7 @@ class BookAdapter(option: FirestorePagingOptions<Book>, val clicked: Clicked, va
         holder.binding.cart.setOnClickListener {
             clicked.cart(model)
         }
-        Picasso.get().load(model.image).placeholder(R.drawable.app_icon).error(R.drawable.app_icon).fit().into(holder.binding.image)
+       Picasso.get().load(model.image).placeholder(R.drawable.app_icon).error(R.drawable.app_icon).fit().into(holder.binding.image)
     }
 
     override fun onLoadingStateChanged(state: LoadingState) {

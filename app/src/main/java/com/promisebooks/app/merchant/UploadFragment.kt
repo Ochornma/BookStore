@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -48,7 +47,7 @@ class UploadFragment : Fragment() {
             val  descripe = binding.descripInput.text.toString()
             val  price = binding.priceInput.text.toString()
             if (title.isNotEmpty() and descripe.isNotEmpty() and price.isNotEmpty() /*and imageurl.isNotEmpty()*/){
-                val book = Book(title, imageurl, descripe, price)
+                val book = Book(title, "https://firebasestorage.googleapis.com/v0/b/flutterwave-promise.appspot.com/o/flutterwave%2Fbook1.png?alt=media&token=aa1b28be-06fa-43be-b778-e6fb1f3f33d0", descripe, price)
                 collection.document().set(book).addOnSuccessListener {
                     activity?.let { it1 -> K.alert("UPLOADED", null, it1, false) }
                     clear()
