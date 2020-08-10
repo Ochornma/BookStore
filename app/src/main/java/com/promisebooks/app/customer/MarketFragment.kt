@@ -20,6 +20,8 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import com.promisebooks.app.R
 import com.promisebooks.app.auth.AuthActivity
+import com.promisebooks.app.customer.adapter.BookAdapter
+import com.promisebooks.app.customer.adapter.Clicked
 import com.promisebooks.app.databinding.MarketFragmentBinding
 import com.promisebooks.app.model.Book
 import com.promisebooks.app.model.Cart
@@ -28,7 +30,8 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 
-class MarketFragment : Fragment(), Clicked{
+class MarketFragment : Fragment(),
+    Clicked {
     private lateinit var binding: MarketFragmentBinding
     private var db = FirebaseFirestore.getInstance()
     private var collection = db.collection("Books")
@@ -80,7 +83,14 @@ class MarketFragment : Fragment(), Clicked{
             .setQuery(query, config, Book::class.java)
             .build()
 
-        madapter = context?.let { BookAdapter(options, this, binding.swipeRefresh, it) }!!
+        madapter = context?.let {
+            BookAdapter(
+                options,
+                this,
+                binding.swipeRefresh,
+                it
+            )
+        }!!
         binding.recyclerView.setHasFixedSize(true)
         binding.recyclerView.layoutManager = LinearLayoutManager(context)
         binding.recyclerView.adapter = madapter

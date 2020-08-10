@@ -1,7 +1,9 @@
 package com.promisebooks.app.customer
 
 import android.app.AlertDialog
+import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -30,6 +32,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.promisebooks.app.R
 import com.promisebooks.app.auth.AuthActivity
+import com.promisebooks.app.customer.adapter.PaymentAdapter
 import com.promisebooks.app.databinding.PaymentFragmentBinding
 import com.promisebooks.app.model.*
 import com.promisebooks.app.util.AccountRecieved
@@ -58,6 +61,8 @@ class PaymentFragment : Fragment(), Transaction, AccountRecieved, ProgressCheck,
     private var cardPayManager: CardPaymentManager? = null
     private var card: Card? = null
     private var raveManager: RavePayManager? = null
+    private var sharedpreferences: SharedPreferences? = null
+    private var editor: SharedPreferences.Editor? = null
 
     companion object {
         fun newInstance() = PaymentFragment()
@@ -74,6 +79,7 @@ class PaymentFragment : Fragment(), Transaction, AccountRecieved, ProgressCheck,
         binding = DataBindingUtil.inflate(inflater, R.layout.payment_fragment, container, false)
         val args: PaymentFragmentArgs by navArgs()
         book = args.book
+        sharedpreferences = activity?.applicationContext?.getSharedPreferences("promise_book", Context.MODE_PRIVATE)
         util = RaveVerificationUtils(this, false, "FLWPUBK-b6f6a82a3ff8ba0fbfcaa5a99a6bec04-X")
         binding.progressCircular.visibility = View.VISIBLE
         binding.paymentContainer.visibility = View.GONE
@@ -150,6 +156,9 @@ class PaymentFragment : Fragment(), Transaction, AccountRecieved, ProgressCheck,
 
         binding.submit.setOnClickListener {
             ref = email + "_" + strDate
+            editor = sharedpreferences?.edit()
+            editor?.putString("ref", ref)
+            editor?.apply()
             raveManager = RaveNonUIManager().setAmount(book.price.toDouble())
                 .setCurrency("NGN")
                 .setEmail(email)
@@ -356,7 +365,8 @@ class PaymentFragment : Fragment(), Transaction, AccountRecieved, ProgressCheck,
     }
 
     override fun onSuccessful(flwRef: String?) {
-        activity?.let { alert("Successful", binding.progressCircular, it, false) }
+        //activity?.let { alert("Successful", binding.progressCircular, it, false) }
+        setData()
     }
 
     override fun showProgressIndicator(active: Boolean) {

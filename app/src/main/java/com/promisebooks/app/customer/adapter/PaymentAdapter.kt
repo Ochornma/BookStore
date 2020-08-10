@@ -1,4 +1,4 @@
-package com.promisebooks.app.customer
+package com.promisebooks.app.customer.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -14,7 +14,9 @@ class PaymentAdapter: RecyclerView.Adapter<PaymentAdapter.PaymentHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PaymentHolder {
         val binding = DataBindingUtil.inflate<PaymentItemBinding>(LayoutInflater.from(parent.context), R.layout.payment_item, parent, false)
-        return PaymentHolder(binding)
+        return PaymentHolder(
+            binding
+        )
     }
 
     override fun getItemCount(): Int {

@@ -249,7 +249,7 @@ class SignUpFragment : Fragment(), CardPaymentCallback, ProgressCheck {
     }
 
     override fun onSuccessful(flwRef: String?) {
-        activity?.let { K.alert("Successful", binding.progressCircular, it, false) }
+        signUp(email, password)
     }
 
     override fun showProgressIndicator(active: Boolean) {

@@ -30,6 +30,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.promisebooks.app.R
 import com.promisebooks.app.auth.AuthActivity
+import com.promisebooks.app.customer.adapter.PaymentAdapter
 import com.promisebooks.app.databinding.CartPaymentFragmentBinding
 import com.promisebooks.app.model.*
 import com.promisebooks.app.util.AccountRecieved
@@ -371,7 +372,7 @@ class CartPaymentFragment : Fragment(), Transaction, AccountRecieved, ProgressCh
     }
 
     override fun onSuccessful(flwRef: String?) {
-        activity?.let { K.alert("Successful", binding.progressCircular, it, false) }
+        setData()
     }
 
     override fun showProgressIndicator(active: Boolean) {

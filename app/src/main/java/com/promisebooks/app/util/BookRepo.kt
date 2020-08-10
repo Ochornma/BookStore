@@ -11,6 +11,7 @@ import com.android.volley.VolleyError
 import com.android.volley.toolbox.JsonObjectRequest
 import com.promisebooks.app.merchant.TransactionDataFactory
 import com.promisebooks.app.model.*
+import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
 import retrofit2.Call
@@ -23,12 +24,18 @@ class BookRepo {
     private lateinit var detailRecieved: DetailRecieved
     private lateinit var accountRecieved: AccountRecieved
     private lateinit var context: Context
+    private lateinit var refundVerify: RefundVerify
     private lateinit var progressCheck: ProgressCheck
     private var mQueue: RequestQueue? = null
    lateinit var itemPagedList: LiveData<PagedList<TransactionDetails>>
     private lateinit var liveDataSource: LiveData<PageKeyedDataSource<Int, TransactionDetails>>
 
 
+    constructor(refundVerify: RefundVerify, context: Context){
+        this.refundVerify = refundVerify
+        this.context = context
+        mQueue = VolleyRequest.getVolley(context)
+    }
     constructor(detail: DetailRecieved, context: Context, url: String){
         this.detailRecieved = detail
         mQueue = VolleyRequest.getVolley(context)
@@ -183,6 +190,51 @@ class BookRepo {
                 }
 
             }
+        mQueue!!.add(request)
+
+
+    }
+
+    fun getRefundTransaction(ref: String) {
+        var detail = RefundRequest()
+        val request: JsonObjectRequest = object : JsonObjectRequest(
+            Method.GET, "https://api.flutterwave.com/v3/transactions?tx_ref=$ref", null,
+            com.android.volley.Response.Listener { response: JSONObject ->
+                try {
+                    val data = response.getJSONArray("data")
+                    val properties = data.getJSONObject(0)
+                    val id = properties.getInt("id")
+                    val amount = properties.getInt("amount")
+                    val processorResponse = properties.getString("status")
+                    val flwRref = properties.getString("flw_ref")
+                    if (processorResponse == "successful"){
+                        detail = RefundRequest(amount = amount, flw_ref = flwRref)
+                        refundVerify.verified(id, detail)
+                    } else{
+                        refundVerify.Refunderror()
+                    }
+
+                } catch (e: JSONException) {
+                    e.printStackTrace()
+                    refundVerify.Refunderror()
+                }
+            },
+            com.android.volley.Response.ErrorListener { error: VolleyError ->
+                error.printStackTrace()
+                refundVerify.Refunderror()
+            }
+        ) {
+            @Throws(AuthFailureError::class)
+            override fun getHeaders(): Map<String, String> {
+                val headers: MutableMap<String, String> =
+                    HashMap()
+                headers["Content-type"] =
+                    "application/json"
+                headers["Authorization"] = "Bearer FLWSECK-2047ac195430e50a46398fc9910921cb-X"
+                return headers
+            }
+
+        }
         mQueue!!.add(request)
 
 

@@ -1,4 +1,4 @@
-package com.promisebooks.app.customer
+package com.promisebooks.app.customer.adapter
 
 import android.view.LayoutInflater
 import android.view.View
@@ -13,10 +13,12 @@ import com.squareup.picasso.Picasso
 class CartAdapter(val clicked: Clicked): RecyclerView.Adapter<CartAdapter.CartHolder>() {
     private var carts:MutableList<Cart> = ArrayList()
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CartHolder{
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CartHolder {
         val binding = DataBindingUtil.inflate<CartItemBinding>(
             LayoutInflater.from(parent.context), R.layout.cart_item, parent, false)
-        return CartHolder(binding)
+        return CartHolder(
+            binding
+        )
     }
 
     override fun getItemCount() = carts.size

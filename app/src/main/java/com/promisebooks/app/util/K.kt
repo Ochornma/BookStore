@@ -22,8 +22,10 @@ class K {
          val query = "price"
 
 
-         fun alert(message: String, view: View, context: Activity, onback: Boolean) {
-             view.visibility = View.GONE
+         fun alert(message: String, view: View?, context: Activity, onback: Boolean) {
+             if (view != null){
+                 view.visibility = View.GONE
+             }
              val builder: AlertDialog.Builder? = context.let { AlertDialog.Builder(it) }
              builder?.setNegativeButton(context.resources?.getString(R.string.cancel)) { dialog, _ ->
                  dialog.dismiss()

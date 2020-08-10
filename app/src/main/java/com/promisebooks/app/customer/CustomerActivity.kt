@@ -9,12 +9,19 @@ import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.NavigationUI
 import com.google.android.material.navigation.NavigationView
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 import com.promisebooks.app.R
+import com.promisebooks.app.model.User
 import kotlinx.android.synthetic.main.activity_customer.*
+import kotlinx.android.synthetic.main.nav_header.*
 
 class CustomerActivity : AppCompatActivity() {
     private lateinit var mAppBarConfiguration: AppBarConfiguration
     private lateinit var drawer: DrawerLayout
+    private var user = FirebaseAuth.getInstance().currentUser
+    private var db = FirebaseFirestore.getInstance()
+    private var collectionUser = db.collection("Users")
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -38,7 +45,16 @@ class CustomerActivity : AppCompatActivity() {
 
         val navController = Navigation.findNavController(this, R.id.main_nav_host)
         NavigationUI.setupWithNavController(navigationView, navController)
+        val uiid = user?.uid
+        if (uiid != null) {
+            collectionUser.document(uiid).get().addOnSuccessListener { it1 ->
+                val user = it1.toObject<User>(User::class.java)
+                if (user != null) {
+                    header_subtitle.text = user.name
 
+                }
+            }
+        }
     }
 
     override fun onBackPressed() {

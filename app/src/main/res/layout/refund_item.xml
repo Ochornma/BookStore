@@ -87,7 +87,7 @@
                     <Button
                         android:background="#0FFFFFFF"
                         android:backgroundTint="#0FFFFFFF"
-                        android:id="@+id/check_out"
+                        android:id="@+id/confirm_button"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="10dp"

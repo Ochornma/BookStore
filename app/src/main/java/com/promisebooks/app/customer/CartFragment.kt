@@ -17,6 +17,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.promisebooks.app.R
 import com.promisebooks.app.auth.AuthActivity
+import com.promisebooks.app.customer.adapter.CartAdapter
 import com.promisebooks.app.databinding.CartFragmentBinding
 import com.promisebooks.app.model.Cart
 import com.promisebooks.app.model.Refund
@@ -32,7 +33,7 @@ class CartFragment : Fragment(), CartAdapter.Clicked {
     private var email = " "
     private lateinit var drawer: DrawerLayout
     private lateinit var authListner: FirebaseAuth.AuthStateListener
-    private lateinit var adapater:CartAdapter
+    private lateinit var adapater: CartAdapter
 
     companion object {
         fun newInstance() = CartFragment()
