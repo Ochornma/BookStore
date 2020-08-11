@@ -80,7 +80,7 @@ class PaymentFragment : Fragment(), Transaction, AccountRecieved, ProgressCheck,
         val args: PaymentFragmentArgs by navArgs()
         book = args.book
         sharedpreferences = activity?.applicationContext?.getSharedPreferences("promise_book", Context.MODE_PRIVATE)
-        util = RaveVerificationUtils(this, false, "FLWPUBK-b6f6a82a3ff8ba0fbfcaa5a99a6bec04-X")
+        util = RaveVerificationUtils(this, true, "FLWPUBK_TEST-d38161cd5980f1e8e447620609620afa-X")
         binding.progressCircular.visibility = View.VISIBLE
         binding.paymentContainer.visibility = View.GONE
         binding.recyclerView.visibility = View.GONE

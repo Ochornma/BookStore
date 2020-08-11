@@ -76,7 +76,7 @@ class CartPaymentFragment : Fragment(), Transaction, AccountRecieved, ProgressCh
         val args: CartPaymentFragmentArgs by navArgs()
         cart = args.cart
         binding.quantityInput.setText("${cart.qty}")
-        util = RaveVerificationUtils(this, false, "FLWPUBK-b6f6a82a3ff8ba0fbfcaa5a99a6bec04-X")
+        util = RaveVerificationUtils(this, true, "FLWPUBK_TEST-d38161cd5980f1e8e447620609620afa-X")
         binding.progressCircular.visibility = View.VISIBLE
         binding.paymentContainer.visibility = View.GONE
         binding.recyclerView.visibility = View.GONE
@@ -297,7 +297,7 @@ class CartPaymentFragment : Fragment(), Transaction, AccountRecieved, ProgressCh
             }
             when (resultCode) {
                 RavePayActivity.RESULT_SUCCESS -> {
-                    verifyPay("SUCCESS $message", ref)
+                   // verifyPay("SUCCESS $message", ref)
                     //Toast.makeText(context, "SUCCESS $message", Toast.LENGTH_SHORT).show()
                 }
                 RavePayActivity.RESULT_ERROR -> {

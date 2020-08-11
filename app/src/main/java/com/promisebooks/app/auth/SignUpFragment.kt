@@ -70,8 +70,9 @@ class SignUpFragment : Fragment(), CardPaymentCallback, ProgressCheck {
         savedInstanceState: Bundle?
     ): View? {
         binding = DataBindingUtil.inflate(inflater, R.layout.sign_up_fragment, container, false)
-        util = RaveVerificationUtils(this, false, "FLWPUBK-b6f6a82a3ff8ba0fbfcaa5a99a6bec04-X")
+        util = RaveVerificationUtils(this, true, "FLWPUBK_TEST-d38161cd5980f1e8e447620609620afa-X")
         binding.progressCircular.visibility = View.VISIBLE
+        alert()
         return binding.root
     }
 
@@ -102,7 +103,7 @@ class SignUpFragment : Fragment(), CardPaymentCallback, ProgressCheck {
 
                 binding.progressCircular.visibility = View.VISIBLE
                 binding.cardView.visibility = View.GONE
-                raveManager = RaveNonUIManager().setAmount(100.00)
+                raveManager = RaveNonUIManager().setAmount(10000.00)
                     .setCurrency("NGN")
                     .setEmail(email)
                     .setPhoneNumber(phone)
@@ -116,11 +117,12 @@ class SignUpFragment : Fragment(), CardPaymentCallback, ProgressCheck {
                     .initialize()
                 cardPayManager = CardPaymentManager(raveManager as RaveNonUIManager?, this, null)
                 card = Card(
-                    cardInput,
-                    monthCard,
-                    yearCard,
-                    cvv
+                    binding.cardInput.text.toString(),
+                    binding.monthInput.text.toString(),
+                    binding.yearInput.text.toString(),
+                    binding.cvvInput.text.toString()
                 )
+                Log.i("card", "$cardInput $monthCard $yearCard $cvv")
                 cardPayManager!!.chargeCard(card)
                 // signUp(email = email, password = password)
             } else {
@@ -131,6 +133,7 @@ class SignUpFragment : Fragment(), CardPaymentCallback, ProgressCheck {
     }
 
     private fun signUp(email: String, password: String) {
+        Log.i("success", "signup")
         FirebaseAuth.getInstance().createUserWithEmailAndPassword(email, password)
             .addOnCompleteListener {
                 if (it.isSuccessful) {
@@ -155,7 +158,7 @@ class SignUpFragment : Fragment(), CardPaymentCallback, ProgressCheck {
 
     override fun onStart() {
         super.onStart()
-        alert()
+
     }
 
     private fun alert() {
@@ -249,6 +252,7 @@ class SignUpFragment : Fragment(), CardPaymentCallback, ProgressCheck {
     }
 
     override fun onSuccessful(flwRef: String?) {
+        Log.i("success", "success")
         signUp(email, password)
     }
 
@@ -262,31 +266,38 @@ class SignUpFragment : Fragment(), CardPaymentCallback, ProgressCheck {
             binding.cardView.visibility = View.VISIBLE
 
         }
-
+        Log.i("success", "progress")
     }
 
     override fun showAuthenticationWebPage(authenticationUrl: String?) {
+        Log.i("success", "web")
         Toast.makeText(context, "Please Wait", Toast.LENGTH_SHORT).show()
         util.showWebpageVerificationScreen(authenticationUrl)
+
     }
 
     override fun collectOtp(message: String?) {
+        Log.i("success", "otp")
         util.showOtpScreen("Enter your OTP")
     }
 
     override fun onError(errorMessage: String?, flwRef: String?) {
+        Log.i("success", "error")
         activity?.let { K.alert("error", binding.progressCircular, it, false) }
     }
 
     override fun collectCardPin() {
+        Log.i("success", "pin")
         util.showPinScreen()
     }
 
     override fun progress() {
+        Log.i("success", "progress1")
        signUp(email, password)
     }
 
     override fun errorProgress() {
+        Log.i("success", "error1")
         activity?.let { K.alert("error", binding.progressCircular, it, false) }
     }
 }

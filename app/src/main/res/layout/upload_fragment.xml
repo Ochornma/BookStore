@@ -40,6 +40,7 @@
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:padding="10dp"
+                android:id="@+id/container"
                 android:layout_height="wrap_content">
 
                 <TextView
@@ -145,14 +146,14 @@
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <ImageView
+                    android:id="@+id/image_view"
                     android:layout_width="100dp"
                     android:layout_height="100dp"
-                    android:id="@+id/image_view"
+                    android:layout_marginTop="10dp"
                     android:scaleType="fitXY"
-                    app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/price"/>
-<!--
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/price" />
                 <Button
                     android:id="@+id/image"
                     android:layout_width="wrap_content"
@@ -166,7 +167,7 @@
                     android:textSize="15sp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/image_view" />-->
+                    app:layout_constraintTop_toBottomOf="@+id/image_view" />
 
                 <Button
                     android:id="@+id/upload"
@@ -184,7 +185,7 @@
                     android:textSize="15sp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/image_view" />
+                    app:layout_constraintTop_toBottomOf="@+id/image" />
             </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.cardview.widget.CardView>
 
