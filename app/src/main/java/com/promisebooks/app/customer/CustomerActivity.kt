@@ -30,6 +30,7 @@ class CustomerActivity : AppCompatActivity() {
 
         drawer = findViewById(R.id.drawer_layout)
         val navigationView = findViewById<NavigationView>(R.id.nav_view)
+        navigationView.inflateMenu(R.menu.merchant_drawer)
         val navHostFragment = supportFragmentManager
             .findFragmentById(R.id.main_nav_host) as NavHostFragment?
         NavigationUI.setupWithNavController(navigationView,

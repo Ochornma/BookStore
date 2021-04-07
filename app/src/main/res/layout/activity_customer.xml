@@ -36,7 +36,7 @@
             app:itemTextColor="#000"
             app:itemIconTint="#000"
             app:headerLayout="@layout/nav_header"
-            app:menu="@menu/customer_main_drawer"
+
             tools:targetApi="lollipop" >
 
 

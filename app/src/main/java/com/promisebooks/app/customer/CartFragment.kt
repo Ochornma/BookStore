@@ -10,6 +10,7 @@ import androidx.core.view.GravityCompat
 import androidx.databinding.DataBindingUtil
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -21,25 +22,21 @@ import com.promisebooks.app.customer.adapter.CartAdapter
 import com.promisebooks.app.databinding.CartFragmentBinding
 import com.promisebooks.app.model.Cart
 import com.promisebooks.app.model.Refund
-import java.util.*
+import com.promisebooks.app.util.BaseFragment
+import com.promisebooks.app.util.CartDeleteCalback
+import com.promisebooks.app.util.CartRefundCallback
 
-class CartFragment : Fragment(), CartAdapter.Clicked {
-    private lateinit var binding: CartFragmentBinding
-    private var db = FirebaseFirestore.getInstance()
-    private var collectionCart = db.collection("Cart")
-    private var collectionRefund = db.collection("Refund")
-    private var user = FirebaseAuth.getInstance().currentUser
-    private var uiid = " "
-    private var email = " "
+class CartFragment : BaseFragment<CartFragmentBinding, CartViewModel>(), CartAdapter.Clicked, CartDeleteCalback, CartRefundCallback {
+
+
     private lateinit var drawer: DrawerLayout
-    private lateinit var authListner: FirebaseAuth.AuthStateListener
+
     private lateinit var adapater: CartAdapter
 
     companion object {
         fun newInstance() = CartFragment()
     }
 
-    private lateinit var viewModel: CartViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -66,95 +63,59 @@ class CartFragment : Fragment(), CartAdapter.Clicked {
         }
     }
 
-    private fun setUpListener(){
-        authListner = FirebaseAuth.AuthStateListener { it ->
-            if (it.currentUser != null){
-                /*   if (merchant(it.currentUser!!.email!!)){
-                       val intent = Intent(activity, MerchantActivity::class.java)
-                       intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
-                       startActivity(intent)
-                       activity?.finish()
-                   }*/
-                uiid = user?.uid!!
-                email = user?.email!!
-                getData()
-            }else{
-                FirebaseAuth.getInstance().removeAuthStateListener(authListner)
-                activity?.let {it1 ->
-                    it1.startActivity(
-                        Intent(it1, AuthActivity::class.java)
-                        .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP))
-                    it1.finish()}
 
-
-            }
-
-        }
-        FirebaseAuth.getInstance().addAuthStateListener(authListner)
-    }
 
     private fun getData(){
-        val carts: MutableList<Cart> = ArrayList()
-        collectionCart.whereEqualTo("id", uiid).get().addOnSuccessListener {
-            if (!it.isEmpty){
-
-                val list = it.documents
-                for (item in list){
-                    val cart = item.toObject(Cart::class.java)
-                    if (cart != null) {
-                        carts.add(cart)
-                    }
-                }
-                adapater.setCart(carts)
-                binding.recyclerView.adapter = adapater
-                adapater.notifyDataSetChanged()
-                binding.swipeRefresh.isRefreshing = false
-            } else{
-                binding.swipeRefresh.isRefreshing = false
-                Toast.makeText(context, "Empty", Toast.LENGTH_SHORT).show()
-
-            }
+        val carts: MutableList<Cart> = user?.let { viewModel.getCart(it.uid) }!!
+        if (carts.isNotEmpty()){
+            adapater.setCart(carts)
+            binding.recyclerView.adapter = adapater
+            adapater.notifyDataSetChanged()
+        }else{
+            Toast.makeText(context, "Empty", Toast.LENGTH_SHORT).show()
         }
 
+        binding.swipeRefresh.isRefreshing = false
     }
 
-    override fun onStart() {
-        super.onStart()
-        setUpListener()
-        FirebaseAuth.getInstance().addAuthStateListener(authListner)
-    }
-
-
-
-
-
-    override fun onStop() {
-        super.onStop()
-        FirebaseAuth.getInstance().removeAuthStateListener(authListner)
-    }
 
     override fun remove(cart: Cart) {
         binding.swipeRefresh.isRefreshing = true
-       collectionCart.document("${cart.title}_$email").delete().addOnSuccessListener {
-           Toast.makeText(context, "Removed from cart", Toast.LENGTH_SHORT).show()
-           getData()
-       }
+        user?.email?.let { viewModel.deleteCart(cart, it) }
+
     }
 
     override fun refund(cart: Cart) {
         binding.swipeRefresh.isRefreshing = true
         val refund = Refund(cart.image, cart.title, cart.name, cart.ref)
-        collectionRefund.document().set(refund).addOnSuccessListener {
-            collectionCart.document("${cart.title}_$email").delete().addOnSuccessListener {
-                Toast.makeText(context, "Refund Requested", Toast.LENGTH_SHORT).show()
-                getData()
-            }
-        }
+        user?.email?.let { viewModel.refundcart(refund, cart, it) }
     }
 
     override fun pay(cart: Cart, view: View) {
         val action = CartFragmentDirections.actionCartFragmentToCartPaymentFragment(cart)
         Navigation.findNavController(view).navigate(action)
+    }
+
+    override fun deleteCallback() {
+        Toast.makeText(context, "Removed from cart", Toast.LENGTH_SHORT).show()
+        getData()
+    }
+
+    override fun refundCallback() {
+        Toast.makeText(context, "Refund Requested", Toast.LENGTH_SHORT).show()
+        getData()
+    }
+
+
+    override fun getViewModel(): Class<CartViewModel> {
+        return CartViewModel::class.java
+    }
+
+    override fun getFragmentBinding(
+        inflater: LayoutInflater,
+        container: ViewGroup?
+    ): CartFragmentBinding {
+      return CartFragmentBinding.inflate(inflater, container, false)
     }
 
 }

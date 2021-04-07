@@ -178,10 +178,7 @@ class UploadFragment : Fragment() {
                 // Log.d(TAG, String.valueOf(bitmap));
                 binding.imageView.setImageBitmap(bitmap)*/
                 val bitmap = when {
-                    Build.VERSION.SDK_INT < 28 -> MediaStore.Images.Media.getBitmap(
-                        activity?.contentResolver,
-                        uri
-                    )
+                    Build.VERSION.SDK_INT < 28 -> MediaStore.Images.Media.getBitmap(activity?.contentResolver, uri)
                     else -> {
                         val source =
                             activity?.contentResolver?.let { uri?.let { it1 ->
