@@ -10,7 +10,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.viewbinding.ViewBinding
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseUser
 import com.promisebooks.app.auth.AuthActivity
 
 abstract class BaseFragment<B : ViewBinding, VM : ViewModel> : Fragment() {
@@ -48,8 +47,6 @@ abstract class BaseFragment<B : ViewBinding, VM : ViewModel> : Fragment() {
                         Intent(it1, AuthActivity::class.java)
                             .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP))
                     it1.finish()}
-
-
             }else{
                 user = it.currentUser
             }
