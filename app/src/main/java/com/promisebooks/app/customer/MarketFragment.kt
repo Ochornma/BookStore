@@ -139,5 +139,9 @@ class MarketFragment : BaseFragment<MarketFragmentBinding, MarketViewModel>(), C
         binding.swipeRefresh.isRefreshing = false
     }
 
+    override fun callbackError() {
+
+    }
+
 
 }

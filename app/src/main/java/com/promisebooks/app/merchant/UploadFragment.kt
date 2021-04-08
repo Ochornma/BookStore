@@ -7,9 +7,7 @@ import android.content.pm.PackageManager
 import android.graphics.ImageDecoder
 import android.net.Uri
 import android.os.Build
-import android.os.Bundle
 import android.provider.MediaStore
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -17,75 +15,43 @@ import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.core.content.PermissionChecker
 import androidx.core.content.PermissionChecker.checkSelfPermission
-import androidx.databinding.DataBindingUtil
-import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.storage.FirebaseStorage
-import com.google.firebase.storage.StorageReference
-import com.promisebooks.app.R
-import com.promisebooks.app.auth.AuthActivity
 import com.promisebooks.app.databinding.UploadFragmentBinding
-import com.promisebooks.app.model.Book
+import com.promisebooks.app.util.BaseFragment
+import com.promisebooks.app.util.CartCallback
 import com.promisebooks.app.util.K
 import java.io.IOException
 
 
-class UploadFragment : Fragment() {
-    private lateinit var binding:UploadFragmentBinding
+class UploadFragment : BaseFragment<UploadFragmentBinding, UploadViewModel>(), CartCallback {
+
     private  var imageurl: Uri? = null
-    private var db = FirebaseFirestore.getInstance()
-    private var collection = db.collection("Books")
-    private lateinit var authListner: FirebaseAuth.AuthStateListener
     private val PICK_IMAGE_REQUEST = 1
     private val PERMISSION_CODE = 2
-    private var mStorageRef: StorageReference? = null
+
 
     companion object {
         fun newInstance() = UploadFragment()
     }
 
-    private lateinit var viewModel: UploadViewModel
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        binding = DataBindingUtil.inflate(inflater, R.layout.upload_fragment, container, false)
+    override fun setUpViews() {
+        super.setUpViews()
         binding.backPress.setOnClickListener {
             activity?.onBackPressed()
         }
-        mStorageRef = FirebaseStorage.getInstance().reference
-        return binding.root
-    }
+        binding.image.setOnClickListener {
+            chooseImage()
+        }
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-        viewModel = ViewModelProvider(this).get(UploadViewModel::class.java)
         binding.upload.setOnClickListener {
-             binding.progressCircular.visibility = View.VISIBLE
+            binding.progressCircular.visibility = View.VISIBLE
             binding.container.visibility = View.GONE
-          val  title = binding.titleInput.text.toString()
+            val  title = binding.titleInput.text.toString()
             val  descripe = binding.descripInput.text.toString()
             val  price = binding.priceInput.text.toString()
             if (title.isNotEmpty() and descripe.isNotEmpty() and price.isNotEmpty() and (imageurl != null)){
 
-                val riversRef: StorageReference = mStorageRef?.child("flutterwave/${System.currentTimeMillis()}")!!
-                riversRef.putFile(imageurl!!).addOnSuccessListener {
-                    it.storage.downloadUrl.addOnSuccessListener {it1 ->
-                         val book = Book(title, it1.toString(), descripe, price)
-                collection.document().set(book).addOnSuccessListener {
-                    activity?.let { it1 -> K.alert("UPLOADED", binding.progressCircular, it1, false) }
-                    clear()
-                    binding.container.visibility = View.VISIBLE
-                }
-                    }
-
-                }.addOnFailureListener {
-                    activity?.let { it1 -> K.alert("Failed", binding.progressCircular, it1, false) }
-                    binding.container.visibility = View.VISIBLE
-                }
+                imageurl?.let { it1 -> viewModel.uploadImage(it1, title,descripe, price, this) }
 
             }else{
                 binding.progressCircular.visibility = View.GONE
@@ -93,18 +59,15 @@ class UploadFragment : Fragment() {
 
             }
         }
-
-        binding.image.setOnClickListener {
-            chooseImage()
-        }
     }
+
 
     private fun chooseImage() {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (context?.let { checkSelfPermission(it, Manifest.permission.READ_EXTERNAL_STORAGE) } == PermissionChecker.PERMISSION_DENIED) {
                 val permission = arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE)
-                requestPermissions( permission, PERMISSION_CODE);
+                requestPermissions( permission, PERMISSION_CODE)
             } else {
                 val intent = Intent()
                 intent.type = "image/*"
@@ -134,42 +97,11 @@ class UploadFragment : Fragment() {
         }
     }
 
-    override fun onStart() {
-        super.onStart()
-        setUpListener()
-        FirebaseAuth.getInstance().addAuthStateListener(authListner)
-    }
-
-    override fun onStop() {
-        super.onStop()
-        FirebaseAuth.getInstance().removeAuthStateListener(authListner)
-    }
-
-    private fun setUpListener(){
-        authListner = FirebaseAuth.AuthStateListener {
-            if (it.currentUser == null){
-                FirebaseAuth.getInstance().removeAuthStateListener(authListner)
-                /* val intent = Intent(activity?.applicationContext, AuthActivity::class.java)
-                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
-                 activity?.startActivity(intent)
-                 activity?.finish()*/
-                activity?.let {it1 ->
-                    it1.startActivity(
-                        Intent(it1, AuthActivity::class.java)
-                            .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP))
-                    it1.finish()
-                }
-
-            }
-
-        }
-        FirebaseAuth.getInstance().addAuthStateListener(authListner)
-    }
 
     @RequiresApi(Build.VERSION_CODES.P)
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null && data.data != null) {
-            val uri: Uri? = data.data!!
+            val uri: Uri = data.data!!
             if (uri != null) {
                 imageurl = uri
             }
@@ -214,5 +146,25 @@ class UploadFragment : Fragment() {
             }
         }
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+    }
+
+    override fun getViewModel(): Class<UploadViewModel> {
+     return UploadViewModel::class.java
+    }
+
+    override fun getFragmentBinding(
+        inflater: LayoutInflater,
+        container: ViewGroup?
+    ): UploadFragmentBinding = UploadFragmentBinding.inflate(inflater, container, false)
+
+    override fun callback() {
+        activity?.let { it1 -> K.alert("UPLOADED", binding.progressCircular, it1, false) }
+        clear()
+        binding.container.visibility = View.VISIBLE
+    }
+
+    override fun callbackError() {
+        activity?.let { it1 -> K.alert("Failed", binding.progressCircular, it1, false) }
+        binding.container.visibility = View.VISIBLE
     }
 }

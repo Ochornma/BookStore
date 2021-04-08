@@ -5,6 +5,7 @@ import com.promisebooks.app.model.BookBought
 
 interface CartCallback {
     fun callback()
+    fun callbackError()
 }
 
 interface CartBookCallback{

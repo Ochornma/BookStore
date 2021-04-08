@@ -348,4 +348,8 @@ class PaymentFragment :  BaseFragment2<PaymentFragmentBinding>(), Transaction, A
         builder?.create()?.show()
     }
 
+    override fun callbackError() {
+
+    }
+
 }

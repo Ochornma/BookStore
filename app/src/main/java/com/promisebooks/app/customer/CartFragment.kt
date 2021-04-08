@@ -88,6 +88,10 @@ class CartFragment : BaseFragment<CartFragmentBinding, CartViewModel>(), CartAda
         getData()
     }
 
+    override fun callbackError() {
+
+    }
+
 
     override fun getViewModel(): Class<CartViewModel> {
         return CartViewModel::class.java
