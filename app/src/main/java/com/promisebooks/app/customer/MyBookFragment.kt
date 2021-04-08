@@ -18,147 +18,67 @@ import com.promisebooks.app.R
 import com.promisebooks.app.auth.AuthActivity
 import com.promisebooks.app.databinding.MyBookFragmentBinding
 import com.promisebooks.app.model.BookBought
+import com.promisebooks.app.util.BaseFragment
+import com.promisebooks.app.util.CartBookCallback
 import java.util.*
 
 
-class MyBookFragment : Fragment() {
-    private lateinit var binding:MyBookFragmentBinding
-    private lateinit var adapater: MyBooksAdapater
-    private var db = FirebaseFirestore.getInstance()
+class MyBookFragment : BaseFragment<MyBookFragmentBinding, MyBookViewModel>(), CartBookCallback {
 
-    private var collectionProduct = db.collection("BoughtProducts")
-    private var user = FirebaseAuth.getInstance().currentUser
-    private var uiid = " "
+    private lateinit var adapater: MyBooksAdapater
     private lateinit var drawer: DrawerLayout
-    private lateinit var authListner: FirebaseAuth.AuthStateListener
+
 
     companion object {
         fun newInstance() = MyBookFragment()
     }
 
-    private lateinit var viewModel: MyBookViewModel
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        binding = DataBindingUtil.inflate(inflater, R.layout.my_book_fragment, container, false)
+
+    override fun setUpViews() {
+        super.setUpViews()
         drawer = activity?.findViewById(R.id.drawer_layout)!!
         binding.menu.setOnClickListener {
             drawer.openDrawer(GravityCompat.START)
         }
-
-
         binding.swipeRefresh.isRefreshing = true
         adapater = MyBooksAdapater()
         binding.recyclerView.setHasFixedSize(true)
         binding.recyclerView.layoutManager = LinearLayoutManager(context)
         binding.recyclerView.adapter = adapater
-        return binding.root
-    }
-
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-        viewModel = ViewModelProvider(this).get(MyBookViewModel::class.java)
         binding.swipeRefresh.setOnRefreshListener {
             getData()
         }
     }
 
-    private fun setUpListener(){
-        authListner = FirebaseAuth.AuthStateListener { it ->
-            if (it.currentUser != null){
-             /*   if (merchant(it.currentUser!!.email!!)){
-                    val intent = Intent(activity, MerchantActivity::class.java)
-                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
-                    startActivity(intent)
-                    activity?.finish()
-                }*/
-                uiid = user?.uid!!
-                getData()
-            }else{
-                FirebaseAuth.getInstance().removeAuthStateListener(authListner)
-               activity?.let {it1 ->
-                    it1.startActivity(Intent(it1, AuthActivity::class.java)
-                        .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP))
-                    it1.finish()}
-
-
-            }
-
-        }
-        FirebaseAuth.getInstance().addAuthStateListener(authListner)
-    }
-
-/*    private fun merchant(email: String): Boolean{
-        return (email.substring(email.indexOf("@") + 1).toLowerCase(Locale.ROOT)) == "merchant.com"
-    }*/
-
-    private fun getData(){
-        val books: MutableList<BookBought> = ArrayList()
-        collectionProduct.whereEqualTo("id", uiid).get().addOnSuccessListener {
-            if (!it.isEmpty){
-
-                val list = it.documents
-                for (item in list){
-                    val book = item.toObject(BookBought::class.java)
-                    if (book != null) {
-                        books.add(book)
-                    }
-                }
-                adapater.setBook(books)
-                binding.recyclerView.adapter = adapater
-                adapater.notifyDataSetChanged()
-                binding.swipeRefresh.isRefreshing = false
-            } else{
-                binding.swipeRefresh.isRefreshing = false
-                Toast.makeText(context, "Empty", Toast.LENGTH_SHORT).show()
-
-            }
-        }
-
-    }
-
-/*    private fun setUpData() {
-        val query = collectionProduct.orderBy("price")
-            .startAt(uiid)
-            .endAt(uiid)*//*.whereEqualTo("id", uiid)*//*
-          *//*.orderBy("price", Query.Direction.ASCENDING).whereEqualTo("id", uiid)*//*
-        val config = PagedList.Config.Builder()
-            .setEnablePlaceholders(false)
-            .setPrefetchDistance(2)
-            .setPageSize(10)
-            .build()
-
-        val options = FirestorePagingOptions.Builder<BookBought>()
-            .setLifecycleOwner(this)
-            .setQuery(query, config, BookBought::class.java)
-            .build()
-
-
-        adapater = context?.let { MyBooksAdapater(options , binding.swipeRefresh, it) }!!
-        adapater.updateOptions(options)
-        binding.recyclerView.setHasFixedSize(true)
-        binding.recyclerView.layoutManager = LinearLayoutManager(context)
-        binding.recyclerView.adapter = adapater
-        adapater.startListening()
-        adapater.notifyDataSetChanged()
-
-    }*/
     override fun onStart() {
         super.onStart()
-        setUpListener()
-       FirebaseAuth.getInstance().addAuthStateListener(authListner)
+        getData()
+    }
+
+    private fun getData(){
+    viewModel.getBook(user!!.uid, this)
+
     }
 
 
+    override fun getViewModel(): Class<MyBookViewModel> = MyBookViewModel::class.java
 
+    override fun getFragmentBinding(
+        inflater: LayoutInflater,
+        container: ViewGroup?
+    ): MyBookFragmentBinding = MyBookFragmentBinding.inflate(inflater, container, false)
 
-
-    override fun onStop() {
-        super.onStop()
-        FirebaseAuth.getInstance().removeAuthStateListener(authListner)
+    override fun callback(book: MutableList<BookBought>) {
+        adapater.setBook(book)
+        binding.recyclerView.adapter = adapater
+        adapater.notifyDataSetChanged()
+        binding.swipeRefresh.isRefreshing = false
     }
 
+    override fun callbackError() {
+        binding.swipeRefresh.isRefreshing = false
+        Toast.makeText(context, "Empty", Toast.LENGTH_SHORT).show()
+    }
 }
 
