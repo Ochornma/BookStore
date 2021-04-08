@@ -22,13 +22,14 @@ import com.promisebooks.app.auth.AuthActivity
 import com.promisebooks.app.databinding.RefundFragmentBinding
 import com.promisebooks.app.model.Refund
 import com.promisebooks.app.model.RefundRequest
+import com.promisebooks.app.util.BaseFragment2
 import com.promisebooks.app.util.K
 import com.promisebooks.app.util.RefundVerify
 
-class RefundFragment : Fragment(), ClickedRefund, RefundVerify {
-    private lateinit var binding:RefundFragmentBinding
+class RefundFragment : BaseFragment2<RefundFragmentBinding>(), ClickedRefund, RefundVerify {
+
     private lateinit var drawer: DrawerLayout
-    private lateinit var authListner: FirebaseAuth.AuthStateListener
+
     private lateinit var madapter: RefundAdapter
     private var db = FirebaseFirestore.getInstance()
     private var collection = db.collection("Refund")
@@ -39,8 +40,16 @@ class RefundFragment : Fragment(), ClickedRefund, RefundVerify {
 
     private lateinit var viewModel: RefundViewModel
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        binding = DataBindingUtil.inflate(inflater, R.layout.refund_fragment, container, false)
+
+
+    override fun setUpViewModel() {
+        super.setUpViewModel()
+        val factory = context?.let { RefundFactory(this, it) }!!
+        viewModel = ViewModelProvider(this, factory).get(RefundViewModel::class.java)
+    }
+
+    override fun setUpViews() {
+        super.setUpViews()
         drawer = activity?.findViewById(R.id.drawer_layout)!!
         //setUpData()
         //getData()
@@ -51,13 +60,10 @@ class RefundFragment : Fragment(), ClickedRefund, RefundVerify {
         binding.menu.setOnClickListener {
             drawer.openDrawer(GravityCompat.START)
         }
-        return binding.root
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        val factory = context?.let { RefundFactory(this, it) }!!
-        viewModel = ViewModelProvider(this, factory).get(RefundViewModel::class.java)
         setUpData()
         // getData()
     }
@@ -65,15 +71,13 @@ class RefundFragment : Fragment(), ClickedRefund, RefundVerify {
     override fun onStart() {
         super.onStart()
         setUpData()
-        setUpListener()
         madapter.startListening()
-        FirebaseAuth.getInstance().addAuthStateListener(authListner)
+
     }
 
     override fun onStop() {
         super.onStop()
         madapter.stopListening()
-        FirebaseAuth.getInstance().removeAuthStateListener(authListner)
     }
 
     private fun setUpData() {
@@ -104,24 +108,7 @@ class RefundFragment : Fragment(), ClickedRefund, RefundVerify {
         madapter.notifyDataSetChanged()
 
     }
-    private fun setUpListener(){
-        authListner = FirebaseAuth.AuthStateListener {
-            if (it.currentUser == null){
-                FirebaseAuth.getInstance().removeAuthStateListener(authListner)
-                /* val intent = Intent(activity?.applicationContext, AuthActivity::class.java)
-                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
-                 activity?.startActivity(intent)
-                 activity?.finish()*/
-                activity?.let {it1 ->
-                    it1.startActivity(Intent(it1, AuthActivity::class.java)
-                        .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP))
-                    it1.finish()
-                }
-            }
 
-        }
-        FirebaseAuth.getInstance().addAuthStateListener(authListner)
-    }
 
 
     override fun click(view: View, refund: Refund) {
@@ -148,5 +135,10 @@ class RefundFragment : Fragment(), ClickedRefund, RefundVerify {
         activity?.let { K.alert("Transaction not found", null, it, false) }
         binding.swipeRefresh.isRefreshing = false
     }
+
+    override fun getFragmentBinding(
+        inflater: LayoutInflater,
+        container: ViewGroup?
+    ): RefundFragmentBinding = RefundFragmentBinding.inflate(inflater, container, false)
 
 }
