@@ -31,25 +31,20 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.promisebooks.app.R
 import com.promisebooks.app.auth.AuthActivity
 import com.promisebooks.app.customer.adapter.PaymentAdapter
+import com.promisebooks.app.databinding.CartFragmentBinding
 import com.promisebooks.app.databinding.CartPaymentFragmentBinding
 import com.promisebooks.app.model.*
-import com.promisebooks.app.util.AccountRecieved
-import com.promisebooks.app.util.K
-import com.promisebooks.app.util.ProgressCheck
-import com.promisebooks.app.util.Transaction
+import com.promisebooks.app.util.*
 import java.text.SimpleDateFormat
 import java.util.*
 
-class CartPaymentFragment : Fragment(), Transaction, AccountRecieved, ProgressCheck, CardPaymentCallback {
-    private lateinit var binding: CartPaymentFragmentBinding
+class CartPaymentFragment : BaseFragment2<CartPaymentFragmentBinding>(), Transaction, AccountRecieved, ProgressCheck, CardPaymentCallback, CartDeleteCalback {
     private lateinit var authListner: FirebaseAuth.AuthStateListener
     private var db = FirebaseFirestore.getInstance()
-    private var collectionUser = db.collection("Users")
-    private var collectionProduct = db.collection("BoughtProducts")
-    private var collectionCart = db.collection("Cart")
+
     private var email: String = " "
     private var ref = " "
-    private var uiid = " "
+
     private var name = ""
     private var phone = ""
     private var year = Calendar.getInstance().get(Calendar.YEAR)
@@ -68,11 +63,9 @@ class CartPaymentFragment : Fragment(), Transaction, AccountRecieved, ProgressCh
 
     private lateinit var viewModel: CartPaymentViewModel
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        binding = DataBindingUtil.inflate(inflater, R.layout.cart_payment_fragment, container, false)
+
+    override fun setUpViews() {
+        super.setUpViews()
         val args: CartPaymentFragmentArgs by navArgs()
         cart = args.cart
         binding.quantityInput.setText("${cart.qty}")
@@ -85,22 +78,10 @@ class CartPaymentFragment : Fragment(), Transaction, AccountRecieved, ProgressCh
             LinearLayoutManager(context, RecyclerView.VERTICAL, false)
         binding.recyclerView.setHasFixedSize(true)
         binding.recyclerView.adapter = adapter
-        return binding.root
-    }
-
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-        val factory = context?.let { CartPaymentFactory(this, this, it, this) }!!
-        viewModel = ViewModelProvider(this, factory).get(CartPaymentViewModel::class.java)
-        viewModel.getBank()
-        val c = Calendar.getInstance()
-        val sdf = SimpleDateFormat("yyyy-MM-ddHH:mm:ss", Locale.ENGLISH)
-        val strDate: String = sdf.format(c.time)
-
         binding.transfer.setOnClickListener {
             price = binding.quantityInput.text.toString().toInt() * cart.price.toInt()
             binding.progressCircular.visibility = View.VISIBLE
-            ref = email + "_" + strDate
+            ref = email + "_" + viewModel.getTime()
             val accounRequest = AccounRequest(
                 "$price",
                 " ",
@@ -121,7 +102,7 @@ class CartPaymentFragment : Fragment(), Transaction, AccountRecieved, ProgressCh
             price = binding.quantityInput.text.toString().toInt() * cart.price.toInt()
             if (binding.emailInput.text.toString().isNotEmpty()){
                 binding.progressCircular.visibility = View.VISIBLE
-                ref = email + "_" + strDate
+                ref = email + "_" + viewModel.getTime()
                 val accounRequest1 = USSDRequest(
                     binding.emailInput.text.toString(),
                     "$price",
@@ -154,7 +135,7 @@ class CartPaymentFragment : Fragment(), Transaction, AccountRecieved, ProgressCh
 
         binding.submit.setOnClickListener {
             price = binding.quantityInput.text.toString().toInt() * cart.price.toInt()
-            ref = email + "_" + strDate
+            ref = email + "_" + viewModel.getTime()
             raveManager = RaveNonUIManager().setAmount(price.toDouble())
                 .setCurrency("NGN")
                 .setEmail(email)
@@ -179,6 +160,14 @@ class CartPaymentFragment : Fragment(), Transaction, AccountRecieved, ProgressCh
 
     }
 
+    override fun setUpViewModel() {
+        super.setUpViewModel()
+        val factory = context?.let { CartPaymentFactory(this, this, it, this) }!!
+        viewModel = ViewModelProvider(this, factory).get(CartPaymentViewModel::class.java)
+        viewModel.getBank()
+    }
+
+
     private fun clear(){
         binding.apply {
             cardInput.setText("")
@@ -192,69 +181,13 @@ class CartPaymentFragment : Fragment(), Transaction, AccountRecieved, ProgressCh
             invalidateAll()
         }
     }
-    override fun onStart() {
-        super.onStart()
-        setUpListener()
-        FirebaseAuth.getInstance().addAuthStateListener(authListner)
-    }
 
-    override fun onStop() {
-        super.onStop()
-        FirebaseAuth.getInstance().removeAuthStateListener(authListner)
-    }
-
-    private fun setUpListener() {
-        authListner = FirebaseAuth.AuthStateListener {
-            if (it.currentUser != null) {
-                /* if (merchant(it.currentUser!!.email!!)) {
-                     val intent = Intent(activity, MerchantActivity::class.java)
-                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
-                     startActivity(intent)
-                     activity?.finish()
-                 }*/
-                email = FirebaseAuth.getInstance().currentUser?.email!!
-                uiid = FirebaseAuth.getInstance().currentUser?.uid!!
-                collectionUser.document(uiid).get().addOnSuccessListener {it1 ->
-                    val user = it1.toObject<User>(User::class.java)
-                    if (user != null){
-                        phone = user.phone
-                        name = user.name
-                    }
-
-
-                }
-            } else {
-                FirebaseAuth.getInstance().removeAuthStateListener(authListner)
-                /*  val intent = Intent(activity?.applicationContext, AuthActivity::class.java)
-                  intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
-                  activity?.startActivity(intent)
-                  activity?.finish()*/
-                activity?.let {it1 ->
-                    it1.startActivity(
-                        Intent(it1, AuthActivity::class.java)
-                        .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP))
-                    it1.finish()}
-            }
-
-        }
-        FirebaseAuth.getInstance().addAuthStateListener(authListner)
-    }
 
     private fun setData() {
-        val bookBought = BookBought(cart.title, cart.image, cart.description, cart.price, uiid)
-        collectionProduct.document(ref).set(bookBought).addOnSuccessListener {
-            collectionCart.document("${cart.title}_$email").delete().addOnSuccessListener {
-                binding.progressCircular.visibility = View.GONE
-                val builder: AlertDialog.Builder? = context?.let { AlertDialog.Builder(it) }
-                builder?.setNegativeButton(activity?.resources?.getString(R.string.cancel)) { dialog, _ ->
-                    dialog.dismiss()
-                    // Since we cannot proceed, we should finish the activity
-                }
-                builder?.setMessage("SUCCESSFUL")
-                builder?.create()?.show()
-            }
-
+        if (user != null){
+            viewModel.setData(cart, ref, user!!.uid, user!!.email!!, this)
         }
+
     }
 
 /*    private fun merchant(email: String): Boolean {
@@ -405,6 +338,25 @@ class CartPaymentFragment : Fragment(), Transaction, AccountRecieved, ProgressCh
 
     override fun collectCardPin() {
         util.showPinScreen()
+    }
+
+    override fun getFragmentBinding(
+        inflater: LayoutInflater,
+        container: ViewGroup?
+    ): CartPaymentFragmentBinding {
+        return CartPaymentFragmentBinding.inflate(inflater, container, false)
+
+    }
+
+    override fun deleteCallback() {
+        binding.progressCircular.visibility = View.GONE
+        val builder: AlertDialog.Builder = context.let { AlertDialog.Builder(it) }
+        builder.setNegativeButton(activity?.resources?.getString(R.string.cancel)) { dialog, _ ->
+            dialog.dismiss()
+            // Since we cannot proceed, we should finish the activity
+        }
+        builder.setMessage("SUCCESSFUL")
+        builder.create()?.show()
     }
 
 }

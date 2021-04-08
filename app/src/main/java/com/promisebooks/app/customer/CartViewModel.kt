@@ -10,7 +10,7 @@ import com.promisebooks.app.util.CartDeleteCalback
 import com.promisebooks.app.util.CartRefundCallback
 import java.util.ArrayList
 
-class CartViewModel(val callback: CartDeleteCalback, val refundCallback: CartRefundCallback) : ViewModel() {
+class CartViewModel : ViewModel() {
     private var db: FirebaseFirestore = FirebaseFirestore.getInstance()
     private var collectionCart: CollectionReference
     private var collectionRefund: CollectionReference
@@ -39,7 +39,7 @@ class CartViewModel(val callback: CartDeleteCalback, val refundCallback: CartRef
         return carts
     }
 
-    fun deleteCart(cart: Cart, email: String){
+    fun deleteCart(cart: Cart, email: String, callback: CartDeleteCalback ){
         collectionCart.document("${cart.title}_$email").delete().addOnSuccessListener {
            // Toast.makeText(context, "Removed from cart", Toast.LENGTH_SHORT).show()
            // getData()
@@ -47,7 +47,7 @@ class CartViewModel(val callback: CartDeleteCalback, val refundCallback: CartRef
         }
     }
 
-    fun refundcart(refund: Refund, cart: Cart, email: String){
+    fun refundcart(refund: Refund, cart: Cart, email: String, refundCallback: CartRefundCallback){
         collectionRefund.document().set(refund).addOnSuccessListener {
             collectionCart.document("${cart.title}_$email").delete().addOnSuccessListener {
                 refundCallback.refundCallback()

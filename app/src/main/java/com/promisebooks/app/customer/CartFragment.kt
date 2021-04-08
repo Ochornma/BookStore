@@ -38,29 +38,20 @@ class CartFragment : BaseFragment<CartFragmentBinding, CartViewModel>(), CartAda
     }
 
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        binding = DataBindingUtil.inflate(inflater, R.layout.cart_fragment, container, false)
+    override fun setUpViews() {
+        super.setUpViews()
         drawer = activity?.findViewById(R.id.drawer_layout)!!
         binding.menu.setOnClickListener {
             drawer.openDrawer(GravityCompat.START)
+        }
+        binding.swipeRefresh.setOnRefreshListener {
+            getData()
         }
         binding.swipeRefresh.isRefreshing = true
         adapater = CartAdapter(this)
         binding.recyclerView.setHasFixedSize(true)
         binding.recyclerView.layoutManager = LinearLayoutManager(context)
         binding.recyclerView.adapter = adapater
-        return binding.root
-    }
-
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-        viewModel = ViewModelProvider(this).get(CartViewModel::class.java)
-        binding.swipeRefresh.setOnRefreshListener {
-            getData()
-        }
     }
 
 
@@ -81,14 +72,14 @@ class CartFragment : BaseFragment<CartFragmentBinding, CartViewModel>(), CartAda
 
     override fun remove(cart: Cart) {
         binding.swipeRefresh.isRefreshing = true
-        user?.email?.let { viewModel.deleteCart(cart, it) }
+        user?.email?.let { viewModel.deleteCart(cart, it, this) }
 
     }
 
     override fun refund(cart: Cart) {
         binding.swipeRefresh.isRefreshing = true
         val refund = Refund(cart.image, cart.title, cart.name, cart.ref)
-        user?.email?.let { viewModel.refundcart(refund, cart, it) }
+        user?.email?.let { viewModel.refundcart(refund, cart, it, this) }
     }
 
     override fun pay(cart: Cart, view: View) {
