@@ -2,14 +2,11 @@ package com.promisebooks.app.customer
 
 import android.app.AlertDialog
 import android.content.Intent
-import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.databinding.DataBindingUtil
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -29,13 +26,13 @@ import com.flutterwave.raveutils.verification.RaveVerificationUtils
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.promisebooks.app.R
-import com.promisebooks.app.auth.AuthActivity
 import com.promisebooks.app.customer.adapter.PaymentAdapter
-import com.promisebooks.app.databinding.CartFragmentBinding
 import com.promisebooks.app.databinding.CartPaymentFragmentBinding
-import com.promisebooks.app.model.*
+import com.promisebooks.app.model.AccounRequest
+import com.promisebooks.app.model.Cart
+import com.promisebooks.app.model.Data1
+import com.promisebooks.app.model.USSDRequest
 import com.promisebooks.app.util.*
-import java.text.SimpleDateFormat
 import java.util.*
 
 class CartPaymentFragment : BaseFragment2<CartPaymentFragmentBinding>(), Transaction, AccountRecieved, ProgressCheck, CardPaymentCallback, CartDeleteCalback {

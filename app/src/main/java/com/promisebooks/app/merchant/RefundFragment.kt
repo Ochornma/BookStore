@@ -1,24 +1,19 @@
 package com.promisebooks.app.merchant
 
-import android.content.Intent
-import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
 import androidx.core.view.GravityCompat
-import androidx.databinding.DataBindingUtil
 import androidx.drawerlayout.widget.DrawerLayout
+import androidx.lifecycle.ViewModelProvider
 import androidx.paging.PagedList
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.firebase.ui.firestore.paging.FirestorePagingOptions
-import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import com.promisebooks.app.R
-import com.promisebooks.app.auth.AuthActivity
 import com.promisebooks.app.databinding.RefundFragmentBinding
 import com.promisebooks.app.model.Refund
 import com.promisebooks.app.model.RefundRequest

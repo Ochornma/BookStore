@@ -1,35 +1,24 @@
 package com.promisebooks.app.customer
 
-import android.content.Intent
-import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.view.GravityCompat
-import androidx.databinding.DataBindingUtil
 import androidx.drawerlayout.widget.DrawerLayout
-import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.Navigation
 import androidx.paging.PagedList
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.firebase.ui.firestore.paging.FirestorePagingOptions
-import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import com.promisebooks.app.R
-import com.promisebooks.app.auth.AuthActivity
 import com.promisebooks.app.customer.adapter.BookAdapter
 import com.promisebooks.app.customer.adapter.Clicked
 import com.promisebooks.app.databinding.MarketFragmentBinding
 import com.promisebooks.app.model.Book
-import com.promisebooks.app.model.Cart
-import com.promisebooks.app.model.User
 import com.promisebooks.app.util.BaseFragment
 import com.promisebooks.app.util.CartCallback
-import java.text.SimpleDateFormat
-import java.util.*
 
 
 class MarketFragment : BaseFragment<MarketFragmentBinding, MarketViewModel>(), Clicked, CartCallback {

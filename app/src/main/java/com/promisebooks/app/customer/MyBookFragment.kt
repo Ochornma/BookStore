@@ -1,26 +1,16 @@
 package com.promisebooks.app.customer
 
-import android.content.Intent
-import android.os.Bundle
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.view.GravityCompat
-import androidx.databinding.DataBindingUtil
 import androidx.drawerlayout.widget.DrawerLayout
-import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.FirebaseFirestore
 import com.promisebooks.app.R
-import com.promisebooks.app.auth.AuthActivity
 import com.promisebooks.app.databinding.MyBookFragmentBinding
 import com.promisebooks.app.model.BookBought
 import com.promisebooks.app.util.BaseFragment
 import com.promisebooks.app.util.CartBookCallback
-import java.util.*
 
 
 class MyBookFragment : BaseFragment<MyBookFragmentBinding, MyBookViewModel>(), CartBookCallback {
