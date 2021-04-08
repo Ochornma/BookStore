@@ -33,7 +33,7 @@ import com.promisebooks.app.model.Book
 import com.promisebooks.app.model.Data1
 import com.promisebooks.app.model.USSDRequest
 import com.promisebooks.app.util.*
-import com.promisebooks.app.util.K.Companion.alert
+import com.promisebooks.app.util.BookView.Companion.alert
 import java.util.*
 
 

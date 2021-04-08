@@ -265,7 +265,7 @@ class CartPaymentFragment : BaseFragment2<CartPaymentFragmentBinding>(), Transac
     }
 
     override fun errorTransaction() {
-        activity?.let { K.alert("error", binding.progressCircular, it, false) }
+        activity?.let { BookView.alert("error", binding.progressCircular, it, false) }
     }
 
     override fun recieved(banks: List<Data1>) {
@@ -278,7 +278,7 @@ class CartPaymentFragment : BaseFragment2<CartPaymentFragmentBinding>(), Transac
 
     override fun errorAccount() {
         activity?.let {
-            K.alert(
+            BookView.alert(
                 "Couldn't Retrieve Bank Codes",
                 binding.progressCircular,
                 it,
@@ -293,7 +293,7 @@ class CartPaymentFragment : BaseFragment2<CartPaymentFragmentBinding>(), Transac
     }
 
     override fun errorProgress() {
-        activity?.let { K.alert("error", binding.progressCircular, it, false) }
+        activity?.let { BookView.alert("error", binding.progressCircular, it, false) }
     }
 
     override fun collectAddress() {
@@ -330,7 +330,7 @@ class CartPaymentFragment : BaseFragment2<CartPaymentFragmentBinding>(), Transac
     }
 
     override fun onError(errorMessage: String?, flwRef: String?) {
-        activity?.let { K.alert("error", binding.progressCircular, it, false) }
+        activity?.let { BookView.alert("error", binding.progressCircular, it, false) }
     }
 
     override fun collectCardPin() {

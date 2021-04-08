@@ -12,7 +12,7 @@ import com.promisebooks.app.databinding.TransactionViewFragmentBinding
 import com.promisebooks.app.model.TransactionDetails
 import com.promisebooks.app.util.BaseFragment2
 import com.promisebooks.app.util.DetailRecieved
-import com.promisebooks.app.util.K
+import com.promisebooks.app.util.BookView
 
 class TransactionViewFragment : BaseFragment2<TransactionViewFragmentBinding>(), DetailRecieved {
 
@@ -50,7 +50,7 @@ class TransactionViewFragment : BaseFragment2<TransactionViewFragmentBinding>(),
     }
 
     override fun errorDetail() {
-        activity?.let { K.alert("error in retrieving transactions", binding.progress, it , true) }
+        activity?.let { BookView.alert("error in retrieving transactions", binding.progress, it , true) }
     }
 
     override fun getFragmentBinding(

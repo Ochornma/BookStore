@@ -2,7 +2,6 @@ package com.promisebooks.app.auth
 
 import android.app.AlertDialog
 import android.content.Intent
-import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -28,7 +27,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.promisebooks.app.R
 import com.promisebooks.app.databinding.SignUpFragmentBinding
 import com.promisebooks.app.util.BookRepo
-import com.promisebooks.app.util.K
+import com.promisebooks.app.util.BookView
 import com.promisebooks.app.util.ProgressCheck
 import java.text.SimpleDateFormat
 import java.util.*
@@ -63,12 +62,12 @@ class SignUpFragment : Fragment(), CardPaymentCallback, ProgressCheck {
         fun newInstance() = SignUpFragment()
     }
 
-    private lateinit var viewModel: SignUpViewModel
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding = DataBindingUtil.inflate(inflater, R.layout.sign_up_fragment, container, false)
         util = RaveVerificationUtils(this, true, "FLWPUBK_TEST-d38161cd5980f1e8e447620609620afa-X")
         binding.progressCircular.visibility = View.VISIBLE
@@ -78,7 +77,6 @@ class SignUpFragment : Fragment(), CardPaymentCallback, ProgressCheck {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        viewModel = ViewModelProvider(this).get(SignUpViewModel::class.java)
         binding.backPress.setOnClickListener {
             activity?.onBackPressed()
         }
@@ -156,23 +154,20 @@ class SignUpFragment : Fragment(), CardPaymentCallback, ProgressCheck {
             }
     }
 
-    override fun onStart() {
-        super.onStart()
 
-    }
 
     private fun alert() {
 
-        val builder: AlertDialog.Builder? = context.let { AlertDialog.Builder(it) }
-        builder?.setNegativeButton(context?.resources?.getString(R.string.cancel)) { dialog, _ ->
+        val builder: AlertDialog.Builder = context.let { AlertDialog.Builder(it) }
+        builder.setNegativeButton(context?.resources?.getString(R.string.cancel)) { dialog, _ ->
             dialog.dismiss()
             activity?.onBackPressed()
         }
-        builder?.setPositiveButton("Proceed") { dialogInterface, _ ->
+        builder.setPositiveButton("Proceed") { dialogInterface, _ ->
             dialogInterface.dismiss()
         }
-        builder?.setMessage("Sign up requires a non-refundable fee of NGN 100")
-        builder?.create()?.show()
+        builder.setMessage("Sign up requires a non-refundable fee of NGN 100")
+        builder.create()?.show()
     }
 
     private fun verifyPay(message: String, ref: String){
@@ -283,7 +278,7 @@ class SignUpFragment : Fragment(), CardPaymentCallback, ProgressCheck {
 
     override fun onError(errorMessage: String?, flwRef: String?) {
         Log.i("success", "error")
-        activity?.let { K.alert("error", binding.progressCircular, it, false) }
+        activity?.let { BookView.alert("error", binding.progressCircular, it, false) }
     }
 
     override fun collectCardPin() {
@@ -298,6 +293,6 @@ class SignUpFragment : Fragment(), CardPaymentCallback, ProgressCheck {
 
     override fun errorProgress() {
         Log.i("success", "error1")
-        activity?.let { K.alert("error", binding.progressCircular, it, false) }
+        activity?.let { BookView.alert("error", binding.progressCircular, it, false) }
     }
 }

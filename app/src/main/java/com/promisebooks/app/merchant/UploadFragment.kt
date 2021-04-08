@@ -18,7 +18,7 @@ import androidx.core.content.PermissionChecker.checkSelfPermission
 import com.promisebooks.app.databinding.UploadFragmentBinding
 import com.promisebooks.app.util.BaseFragment
 import com.promisebooks.app.util.CartCallback
-import com.promisebooks.app.util.K
+import com.promisebooks.app.util.BookView
 import java.io.IOException
 
 
@@ -158,13 +158,13 @@ class UploadFragment : BaseFragment<UploadFragmentBinding, UploadViewModel>(), C
     ): UploadFragmentBinding = UploadFragmentBinding.inflate(inflater, container, false)
 
     override fun callback() {
-        activity?.let { it1 -> K.alert("UPLOADED", binding.progressCircular, it1, false) }
+        activity?.let { it1 -> BookView.alert("UPLOADED", binding.progressCircular, it1, false) }
         clear()
         binding.container.visibility = View.VISIBLE
     }
 
     override fun callbackError() {
-        activity?.let { it1 -> K.alert("Failed", binding.progressCircular, it1, false) }
+        activity?.let { it1 -> BookView.alert("Failed", binding.progressCircular, it1, false) }
         binding.container.visibility = View.VISIBLE
     }
 }

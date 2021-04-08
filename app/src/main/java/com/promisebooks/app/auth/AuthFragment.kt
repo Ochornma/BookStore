@@ -8,29 +8,24 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentActivity
-import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.google.firebase.auth.FirebaseAuth
 import com.promisebooks.app.R
 import com.promisebooks.app.customer.CustomerActivity
 import com.promisebooks.app.databinding.AuthFragmentBinding
 import com.promisebooks.app.merchant.MerchantActivity
-import com.promisebooks.app.util.K.Companion.options
+import com.promisebooks.app.util.BookView.Companion.options
 import java.util.*
 
 class AuthFragment : Fragment() {
     private lateinit var binding: AuthFragmentBinding
     private lateinit var authListner: FirebaseAuth.AuthStateListener
- private val activity1 by lazy {
-     FragmentActivity()
- }
+
 
     companion object {
         fun newInstance() = AuthFragment()
     }
 
-    private lateinit var viewModel: AuthViewModel
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         binding = DataBindingUtil.inflate(inflater, R.layout.auth_fragment, container, false)
@@ -40,7 +35,6 @@ class AuthFragment : Fragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        viewModel = ViewModelProvider(this).get(AuthViewModel::class.java)
 
         binding.login.setOnClickListener {
             findNavController().navigate(R.id.loginFragment, null, options)

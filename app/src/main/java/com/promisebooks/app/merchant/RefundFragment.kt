@@ -18,7 +18,7 @@ import com.promisebooks.app.databinding.RefundFragmentBinding
 import com.promisebooks.app.model.Refund
 import com.promisebooks.app.model.RefundRequest
 import com.promisebooks.app.util.BaseFragment2
-import com.promisebooks.app.util.K
+import com.promisebooks.app.util.BookView
 import com.promisebooks.app.util.RefundVerify
 
 class RefundFragment : BaseFragment2<RefundFragmentBinding>(), ClickedRefund, RefundVerify {
@@ -127,7 +127,7 @@ class RefundFragment : BaseFragment2<RefundFragmentBinding>(), ClickedRefund, Re
     }
 
     override fun Refunderror() {
-        activity?.let { K.alert("Transaction not found", null, it, false) }
+        activity?.let { BookView.alert("Transaction not found", null, it, false) }
         binding.swipeRefresh.isRefreshing = false
     }
 

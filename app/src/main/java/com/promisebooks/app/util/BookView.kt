@@ -7,7 +7,7 @@ import android.view.View
 import androidx.navigation.navOptions
 import com.promisebooks.app.R
 
-class K {
+class BookView {
      companion object {
          val options = navOptions {
              anim {
