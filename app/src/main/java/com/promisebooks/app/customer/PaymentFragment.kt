@@ -182,13 +182,9 @@ class PaymentFragment :  BaseFragment2<PaymentFragmentBinding>(), Transaction, A
     }
 
 
-
-
-
     private fun setData() {
-
+        viewModel.getData(book, ref, user!!.uid, this)
     }
-
 
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -351,6 +347,5 @@ class PaymentFragment :  BaseFragment2<PaymentFragmentBinding>(), Transaction, A
         builder?.setMessage("SUCCESSFUL")
         builder?.create()?.show()
     }
-
 
 }
