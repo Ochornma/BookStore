@@ -72,6 +72,8 @@ class DeleteFragment : BaseFragment<DeleteFragmentBinding, DeleteViewModel>() {
 
 
     override fun getViewModel(): Class<DeleteViewModel> = DeleteViewModel::class.java
+
+
     override fun getFragmentBinding(
         inflater: LayoutInflater,
         container: ViewGroup?
