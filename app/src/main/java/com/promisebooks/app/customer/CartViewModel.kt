@@ -1,13 +1,12 @@
 package com.promisebooks.app.customer
 
-import android.widget.Toast
 import androidx.lifecycle.ViewModel
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.FirebaseFirestore
 import com.promisebooks.app.model.Cart
 import com.promisebooks.app.model.Refund
 import com.promisebooks.app.util.CartDeleteCalback
-import com.promisebooks.app.util.CartRefundCallback
+import com.promisebooks.app.util.CartCallback
 import java.util.ArrayList
 
 class CartViewModel : ViewModel() {
@@ -47,10 +46,10 @@ class CartViewModel : ViewModel() {
         }
     }
 
-    fun refundcart(refund: Refund, cart: Cart, email: String, refundCallback: CartRefundCallback){
+    fun refundcart(refund: Refund, cart: Cart, email: String, refundCallback: CartCallback){
         collectionRefund.document().set(refund).addOnSuccessListener {
             collectionCart.document("${cart.title}_$email").delete().addOnSuccessListener {
-                refundCallback.refundCallback()
+                refundCallback.callback()
             }
         }
     }

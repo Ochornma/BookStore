@@ -1,32 +1,23 @@
 package com.promisebooks.app.customer
 
-import android.content.Intent
-import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.view.GravityCompat
-import androidx.databinding.DataBindingUtil
 import androidx.drawerlayout.widget.DrawerLayout
-import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.FirebaseFirestore
 import com.promisebooks.app.R
-import com.promisebooks.app.auth.AuthActivity
 import com.promisebooks.app.customer.adapter.CartAdapter
 import com.promisebooks.app.databinding.CartFragmentBinding
 import com.promisebooks.app.model.Cart
 import com.promisebooks.app.model.Refund
 import com.promisebooks.app.util.BaseFragment
 import com.promisebooks.app.util.CartDeleteCalback
-import com.promisebooks.app.util.CartRefundCallback
+import com.promisebooks.app.util.CartCallback
 
-class CartFragment : BaseFragment<CartFragmentBinding, CartViewModel>(), CartAdapter.Clicked, CartDeleteCalback, CartRefundCallback {
+class CartFragment : BaseFragment<CartFragmentBinding, CartViewModel>(), CartAdapter.Clicked, CartDeleteCalback, CartCallback {
 
 
     private lateinit var drawer: DrawerLayout
@@ -92,7 +83,7 @@ class CartFragment : BaseFragment<CartFragmentBinding, CartViewModel>(), CartAda
         getData()
     }
 
-    override fun refundCallback() {
+    override fun callback() {
         Toast.makeText(context, "Refund Requested", Toast.LENGTH_SHORT).show()
         getData()
     }

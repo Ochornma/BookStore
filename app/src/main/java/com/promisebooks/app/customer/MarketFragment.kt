@@ -26,37 +26,27 @@ import com.promisebooks.app.databinding.MarketFragmentBinding
 import com.promisebooks.app.model.Book
 import com.promisebooks.app.model.Cart
 import com.promisebooks.app.model.User
+import com.promisebooks.app.util.BaseFragment
+import com.promisebooks.app.util.CartCallback
 import java.text.SimpleDateFormat
 import java.util.*
 
 
-class MarketFragment : Fragment(),
-    Clicked {
-    private lateinit var binding: MarketFragmentBinding
+class MarketFragment : BaseFragment<MarketFragmentBinding, MarketViewModel>(), Clicked, CartCallback {
+
     private var db = FirebaseFirestore.getInstance()
     private var collection = db.collection("Books")
-    private var collectionUser = db.collection("Users")
-    private var collectionCart = db.collection("Cart")
     private lateinit var drawer: DrawerLayout
-    private lateinit var authListner: FirebaseAuth.AuthStateListener
     private lateinit var book1: Book
-    private var uiid = " "
-    private var name = ""
-    private var phone = ""
-    private var email: String = " "
     private lateinit var madapter: BookAdapter
 
     companion object {
         fun newInstance() = MarketFragment()
     }
 
-    private lateinit var viewModel: MarketViewModel
+    override fun setUpViews() {
+        super.setUpViews()
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        binding = DataBindingUtil.inflate(inflater, R.layout.market_fragment, container, false)
         drawer = activity?.findViewById(R.id.drawer_layout)!!
         //setUpData()
         //getData()
@@ -65,9 +55,8 @@ class MarketFragment : Fragment(),
         }
 
         binding.menu.setOnClickListener {
-         drawer.openDrawer(GravityCompat.START)
+            drawer.openDrawer(GravityCompat.START)
         }
-        return binding.root
     }
 
     private fun setUpData() {
@@ -99,78 +88,21 @@ class MarketFragment : Fragment(),
 
     }
 
-/*    fun getData(){
-  *//*      val books: MutableList<Book> = ArrayList<Book>()
-        collection.get().addOnSuccessListener {
-            if (!it.isEmpty){
-                val list = it.documents
-                for (item in list){
-                    val book = item.toObject(Book::class.java)
-                    if (book != null) {
-                        books.add(book)
-                    }
-                }
-                adapter.notifyDataSetChanged()
-                binding.progress.visibility = View.GONE
-            }
-        }*//*
-    }*/
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-        viewModel = ViewModelProvider(this).get(MarketViewModel::class.java)
-        setUpData()
-       // getData()
-    }
+
+
 
     override fun onStart() {
         super.onStart()
         setUpData()
-        setUpListener()
         madapter.startListening()
-        FirebaseAuth.getInstance().addAuthStateListener(authListner)
     }
 
     override fun onStop() {
         super.onStop()
         madapter.stopListening()
-        FirebaseAuth.getInstance().removeAuthStateListener(authListner)
     }
 
-    private fun setUpListener(){
-        authListner = FirebaseAuth.AuthStateListener {
-            if (it.currentUser != null){
-          /*      if (merchant(it.currentUser!!.email!!)){
-                    val intent = Intent(activity, MerchantActivity::class.java)
-                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
-                    startActivity(intent)
-                    activity?.finish()
-                }*/
-                email = it.currentUser?.email!!
-                uiid = it.currentUser?.uid!!
-                collectionUser.document(uiid).get().addOnSuccessListener { it1 ->
-                    val user = it1.toObject<User>(User::class.java)
-                    if (user != null) {
-                        phone = user.phone
-                        name = user.name
-                    }
-                }
-
-            }else{
-                FirebaseAuth.getInstance().removeAuthStateListener(authListner)
-               /* val intent = Intent(activity?.applicationContext, AuthActivity::class.java)
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
-                activity?.startActivity(intent)
-                activity?.finish()*/
-                activity?.let {it1 ->
-                    it1.startActivity(Intent(it1, AuthActivity::class.java)
-                        .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP))
-                    it1.finish()}
-            }
-
-        }
-        FirebaseAuth.getInstance().addAuthStateListener(authListner)
-    }
 
 /*    private fun merchant(email: String): Boolean{
         return (email.substring(email.indexOf("@") + 1).toLowerCase(Locale.ROOT)) == "merchant.com"
@@ -184,31 +116,27 @@ class MarketFragment : Fragment(),
 
     override fun cart(book: Book) {
         binding.swipeRefresh.isRefreshing = true
-        val c = Calendar.getInstance()
-        val sdf = SimpleDateFormat("yyyy-MM-ddHH:mm:ss", Locale.ENGLISH)
-        val strDate: String = sdf.format(c.time)
-        val ref = email + "_" + strDate
-        collectionCart.document("${book.title}_$email").get().addOnSuccessListener {
-            if (it.exists()){
-                val cart1 = it.toObject(Cart::class.java)
-                val qty = cart1?.qty
-                val cart = Cart(book.title, book.image, book.description, book.price, false, ref, uiid, name, phone,
-                    qty?.plus(1)!!
-                )
-                collectionCart.document("${book.title}_$email").set(cart).addOnSuccessListener {
-                    Toast.makeText(context, "Book added to cart", Toast.LENGTH_SHORT).show()
-                    binding.swipeRefresh.isRefreshing = false
-                }
-            } else{
-                val cart = Cart(book.title, book.image, book.description, book.price, false, ref, uiid, name, phone, 1)
-                collectionCart.document("${book.title}_$email").set(cart).addOnSuccessListener {
-                    Toast.makeText(context, "Book added to cart", Toast.LENGTH_SHORT).show()
-                    binding.swipeRefresh.isRefreshing = false
-                }
-            }
-        }
 
+        val email = user?.email
+        val uiid = user?.uid
+        val ref = email + "_" + viewModel.getTime()
+        viewModel.cartCollection(book, email!!, ref, uiid!!, customUser.name, customUser.phone, this )
+    }
 
+    override fun getViewModel(): Class<MarketViewModel> {
+        return MarketViewModel::class.java
+    }
+
+    override fun getFragmentBinding(
+        inflater: LayoutInflater,
+        container: ViewGroup?
+    ): MarketFragmentBinding {
+        return MarketFragmentBinding.inflate(inflater, container, false)
+    }
+
+    override fun callback() {
+        Toast.makeText(context, "Book added to cart", Toast.LENGTH_SHORT).show()
+        binding.swipeRefresh.isRefreshing = false
     }
 
 

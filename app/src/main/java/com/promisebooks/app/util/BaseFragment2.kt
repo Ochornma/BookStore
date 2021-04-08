@@ -14,8 +14,8 @@ import com.promisebooks.app.model.User
 
 abstract class BaseFragment2<B : ViewBinding> : Fragment() {
 
-    open var user = FirebaseAuth.getInstance().currentUser
-    open lateinit var customUser: User
+     var user = FirebaseAuth.getInstance().currentUser
+    lateinit var customUser: User
     private var db = FirebaseFirestore.getInstance()
     private var collectionUser = db.collection("Users")
     private lateinit var authListner: FirebaseAuth.AuthStateListener
